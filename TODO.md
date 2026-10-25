@@ -554,6 +554,7 @@ Fungsinya:
 ## GitHub
 
 - [x] Buat repository
+  - Repository produksi baru: `kristantosaputra2-jpg/RAPOR-KU-SD-HABANGOI`; repository lama tetap tidak diubah.
 - [ ] Buat branch strategy
 - [ ] Gunakan Conventional Commits
 - [ ] Buat PR template
@@ -574,15 +575,15 @@ Fungsinya:
 ## Cloudflare
 
 - [x] Buat Cloudflare Pages project
-  - Project terpisah bernama `rapotku-sdtbgkawei` menggunakan paket gratis.
+  - Project terpisah bernama `sdn-tbghabangoi` menggunakan paket gratis.
 - [x] Hubungkan GitHub
-  - Repository `kristantosaputra2-jpg/rapotku-sdn-tumbang-kawei` terhubung ke branch produksi `main`; push berikutnya memicu build otomatis.
+  - Repository `kristantosaputra2-jpg/RAPOR-KU-SD-HABANGOI` terhubung ke branch produksi `main`; push berikutnya memicu build otomatis.
 - [x] Setup environment variables
   - Variabel publik Supabase untuk Vite sudah tersedia pada build Production dan Preview tanpa memasukkan nilainya ke repository.
 - [x] Setup domain
-  - Domain gratis aktif di `https://rapotku-sdtbgkawei.pages.dev`; custom domain belum diperlukan.
+  - Domain gratis aktif di `https://sdn-tbghabangoi.pages.dev`; custom domain belum diperlukan.
 - [x] Test production build
-  - Build `pnpm build` dari commit `8785800` berhasil dan deployment produksi berstatus sukses.
+  - Build `pnpm build` dari commit `12bd3d2` berhasil dan deployment produksi berstatus sukses.
 - [x] Test mobile production
   - Login produksi menampilkan identitas sekolah dan tombol masuk tanpa horizontal overflow pada viewport 360px dan 390px.
 
@@ -594,7 +595,7 @@ Fungsinya:
 - [/] RLS verified
   - Security Advisor tidak menemukan error maupun warning dan schema lint bersih; uji login per role pada project baru masih diperlukan.
 - [/] Admin account verified
-  - Pengguna `suchikristin37@gmail.com` sudah menerima undangan, berstatus confirmed, pernah sign-in, dan profilnya aktif sebagai `admin`; login pada aplikasi produksi masih menunggu pemindahan environment ke project baru.
+  - Pengguna `suchikristin37@gmail.com` sudah menerima undangan, berstatus confirmed, pernah sign-in, dan profilnya aktif sebagai `admin`; environment produksi sudah memakai project baru, tetapi login manual pada domain baru masih perlu diuji.
 - [/] Identitas sekolah verified
   - Nama `SD Negeri Tumbang Habangoi` dan email `suchikristin37@gmail.com` sudah tersimpan pada project baru; NPSN, alamat, dan identitas kepala sekolah belum diberikan.
 - [ ] Tahun ajaran verified
@@ -713,7 +714,9 @@ Task di bawah ini tidak boleh dikerjakan sebelum MVP selesai kecuali ada perubah
 - [x] Cabut akses `public`, `anon`, dan `authenticated` dari fungsi internal `public.rls_auto_enable()`; Security Advisor kembali bersih tanpa error atau warning.
 - [x] Undang `suchikristin37@gmail.com`, aktifkan profil sebagai `admin`, dan verifikasi hasil query `role = admin`, `is_active = true`.
 - [x] Simpan identitas awal `SD Negeri Tumbang Habangoi` dengan email `suchikristin37@gmail.com`; field identitas yang belum diberikan tetap kosong.
-- [x] Perbaiki Auth Site URL dan Redirect URL dari `http://localhost:3000` ke `https://rapotku-sdtbgkawei.pages.dev/`; verifikasi akun undangan sudah confirmed dan pernah sign-in.
+- [x] Tetapkan Auth Site URL dan satu-satunya Redirect URL ke `https://sdn-tbghabangoi.pages.dev/`; hapus redirect deployment lama `rapotku-sdtbgkawei.pages.dev` sesuai persetujuan pengguna.
+- [x] Buat dan push repository publik baru `kristantosaputra2-jpg/RAPOR-KU-SD-HABANGOI` tanpa mengubah repository lama.
+- [x] Deploy project Cloudflare Pages `sdn-tbghabangoi` dari branch `main` dengan konfigurasi Supabase project baru, lalu verifikasi halaman login produksi menampilkan identitas SD Negeri Tumbang Habangoi.
 
 ## 2026-08-31
 
