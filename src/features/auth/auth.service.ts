@@ -1,4 +1,4 @@
-import type { Session, User } from "@supabase/supabase-js"
+import type { AuthChangeEvent, Session, User } from "@supabase/supabase-js"
 
 import { isUserRole, type UserRole } from "@/features/auth/auth.types"
 import {
@@ -10,6 +10,11 @@ import type { Tables } from "@/types/database.types"
 export type LoginCredentials = Readonly<{
   email: string
   password: string
+}>
+
+export type PasswordUpdate = Readonly<{
+  password: string
+  confirmation: string
 }>
 
 export type UserProfile = Pick<
@@ -93,6 +98,62 @@ export async function signInWithPassword(
       "Profil pengguna belum dapat dibaca. Silakan coba lagi.",
     )
   }
+}
+
+export async function requestPasswordReset(
+  emailAddress: string,
+  redirectTo: string,
+  client: RapotKuSupabaseClient = getSupabaseClient(),
+): Promise<void> {
+  const email = emailAddress.trim().toLowerCase()
+
+  if (!email) {
+    throw new AuthFlowError("Email wajib diisi.")
+  }
+
+  const { error } = await client.auth.resetPasswordForEmail(email, {
+    redirectTo,
+  })
+
+  if (error) {
+    throw new AuthFlowError(
+      "Tautan reset belum dapat dikirim. Periksa email dan koneksi lalu coba lagi.",
+    )
+  }
+}
+
+export async function updatePassword(
+  input: PasswordUpdate,
+  client: RapotKuSupabaseClient = getSupabaseClient(),
+): Promise<void> {
+  if (input.password.length < 8) {
+    throw new AuthFlowError("Password baru minimal 8 karakter.")
+  }
+
+  if (input.password !== input.confirmation) {
+    throw new AuthFlowError("Konfirmasi password belum sama.")
+  }
+
+  const { error } = await client.auth.updateUser({ password: input.password })
+
+  if (error) {
+    throw new AuthFlowError(
+      "Password baru belum dapat disimpan. Minta tautan reset baru lalu coba lagi.",
+    )
+  }
+}
+
+export function onPasswordRecovery(
+  callback: () => void,
+  client: RapotKuSupabaseClient = getSupabaseClient(),
+): () => void {
+  const { data } = client.auth.onAuthStateChange((event: AuthChangeEvent) => {
+    if (event === "PASSWORD_RECOVERY") {
+      callback()
+    }
+  })
+
+  return () => data.subscription.unsubscribe()
 }
 
 export async function getCurrentAuthenticatedUser(

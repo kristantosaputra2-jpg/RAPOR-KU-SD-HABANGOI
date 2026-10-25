@@ -6,6 +6,16 @@ import { AuthFlowError } from "@/features/auth/auth.service"
 import { LoginPage } from "@/features/auth/login-page"
 
 describe("LoginPage", () => {
+  it("membuka alur lupa password", async () => {
+    const user = userEvent.setup()
+    const onForgotPassword = vi.fn()
+    render(<LoginPage onLogin={vi.fn()} onForgotPassword={onForgotPassword} />)
+
+    await user.click(screen.getByRole("button", { name: "Lupa password?" }))
+
+    expect(onForgotPassword).toHaveBeenCalledOnce()
+  })
+
   it("menampilkan dan menyembunyikan kata sandi", async () => {
     const user = userEvent.setup()
     render(<LoginPage schoolName="SD Negeri Tumbang Kawei" onLogin={vi.fn()} />)

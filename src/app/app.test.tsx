@@ -1,5 +1,5 @@
 import type { Session, User } from "@supabase/supabase-js"
-import { render, screen, waitFor } from "@testing-library/react"
+import { act, render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -8,8 +8,11 @@ import type { AuthenticatedUser } from "@/features/auth/auth.service"
 
 const authMocks = vi.hoisted(() => ({
   getCurrentAuthenticatedUser: vi.fn(),
+  onPasswordRecovery: vi.fn(),
+  requestPasswordReset: vi.fn(),
   signInWithPassword: vi.fn(),
   signOut: vi.fn(),
+  updatePassword: vi.fn(),
 }))
 
 const schoolMocks = vi.hoisted(() => ({
@@ -133,11 +136,18 @@ const account = {
 
 describe("App", () => {
   beforeEach(() => {
+    window.history.replaceState({}, "", "/")
     authMocks.getCurrentAuthenticatedUser.mockReset()
+    authMocks.onPasswordRecovery.mockReset()
+    authMocks.requestPasswordReset.mockReset()
     authMocks.signInWithPassword.mockReset()
     authMocks.signOut.mockReset()
+    authMocks.updatePassword.mockReset()
     authMocks.getCurrentAuthenticatedUser.mockResolvedValue(null)
+    authMocks.onPasswordRecovery.mockReturnValue(vi.fn())
+    authMocks.requestPasswordReset.mockResolvedValue(undefined)
     authMocks.signOut.mockResolvedValue(undefined)
+    authMocks.updatePassword.mockResolvedValue(undefined)
     schoolMocks.getSchoolSettings.mockReset()
     schoolMocks.saveSchoolSettings.mockReset()
     schoolMocks.getSchoolSettings.mockResolvedValue(null)
@@ -221,6 +231,60 @@ describe("App", () => {
     })
     expect(
       await screen.findByText("Selamat datang, Admin Sekolah"),
+    ).toBeInTheDocument()
+  })
+
+  it("mengirim tautan reset dari menu lupa password", async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    await user.click(
+      await screen.findByRole("button", { name: "Lupa password?" }),
+    )
+    await user.type(screen.getByLabelText("Email"), " Admin@Example.com ")
+    await user.click(screen.getByRole("button", { name: "Kirim tautan reset" }))
+
+    await waitFor(() => {
+      expect(authMocks.requestPasswordReset).toHaveBeenCalledWith(
+        "Admin@Example.com",
+        `${window.location.origin}/`,
+      )
+    })
+    expect(await screen.findByRole("status")).toHaveTextContent(
+      "Tautan reset telah dikirim",
+    )
+  })
+
+  it("menjelaskan ketika tautan reset sudah kedaluwarsa", async () => {
+    window.history.replaceState(
+      {},
+      "",
+      "/#error=access_denied&error_code=otp_expired",
+    )
+
+    render(<App />)
+
+    expect(
+      await screen.findByText(
+        "Tautan reset tidak valid atau sudah kedaluwarsa. Minta tautan baru melalui menu Lupa password.",
+      ),
+    ).toBeInTheDocument()
+  })
+
+  it("membuka halaman password baru saat recovery terverifikasi", async () => {
+    let notifyPasswordRecovery = () => undefined
+    authMocks.onPasswordRecovery.mockImplementation((callback) => {
+      notifyPasswordRecovery = callback
+      return vi.fn()
+    })
+
+    render(<App />)
+    await screen.findByRole("heading", { name: "Masuk ke akun Anda" })
+
+    act(() => notifyPasswordRecovery())
+
+    expect(
+      await screen.findByRole("heading", { name: "Buat password baru" }),
     ).toBeInTheDocument()
   })
 

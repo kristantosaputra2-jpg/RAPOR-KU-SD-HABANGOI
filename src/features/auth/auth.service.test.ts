@@ -4,8 +4,11 @@ import { describe, expect, it, vi } from "vitest"
 import {
   AuthFlowError,
   getCurrentAuthenticatedUser,
+  onPasswordRecovery,
+  requestPasswordReset,
   signInWithPassword,
   signOut,
+  updatePassword,
 } from "@/features/auth/auth.service"
 import type { RapotKuSupabaseClient } from "@/lib/supabase/client"
 
@@ -16,7 +19,9 @@ function createClientMock(options?: {
   loginError?: boolean
   profileActive?: boolean
   profileRole?: "admin" | "homeroom_teacher" | "subject_teacher" | null
+  resetError?: boolean
   sessionAvailable?: boolean
+  updateError?: boolean
 }) {
   const profile = {
     id: user.id,
@@ -31,6 +36,7 @@ function createClientMock(options?: {
   const eq = vi.fn().mockReturnValue({ single })
   const select = vi.fn().mockReturnValue({ eq })
   const from = vi.fn().mockReturnValue({ select })
+  const unsubscribe = vi.fn()
   const auth = {
     signInWithPassword: vi
       .fn()
@@ -44,6 +50,17 @@ function createClientMock(options?: {
       error: null,
     }),
     getUser: vi.fn().mockResolvedValue({ data: { user }, error: null }),
+    resetPasswordForEmail: vi.fn().mockResolvedValue({
+      data: {},
+      error: options?.resetError ? new Error("reset failed") : null,
+    }),
+    updateUser: vi.fn().mockResolvedValue({
+      data: { user },
+      error: options?.updateError ? new Error("update failed") : null,
+    }),
+    onAuthStateChange: vi.fn().mockReturnValue({
+      data: { subscription: { unsubscribe } },
+    }),
     signOut: vi.fn().mockResolvedValue({ error: null }),
   }
 
@@ -116,5 +133,55 @@ describe("auth service", () => {
     await signOut(client)
 
     expect(auth.signOut).toHaveBeenCalledWith({ scope: "local" })
+  })
+
+  it("sends a password reset link to the normalized email", async () => {
+    const { client, auth } = createClientMock()
+
+    await requestPasswordReset(
+      " GURU@example.com ",
+      "https://raporku.example/",
+      client,
+    )
+
+    expect(auth.resetPasswordForEmail).toHaveBeenCalledWith(
+      "guru@example.com",
+      { redirectTo: "https://raporku.example/" },
+    )
+  })
+
+  it("updates a matching password with at least eight characters", async () => {
+    const { client, auth } = createClientMock()
+
+    await updatePassword(
+      { password: "rahasia123", confirmation: "rahasia123" },
+      client,
+    )
+
+    expect(auth.updateUser).toHaveBeenCalledWith({ password: "rahasia123" })
+  })
+
+  it("rejects a password confirmation that does not match", async () => {
+    const { client, auth } = createClientMock()
+
+    await expect(
+      updatePassword(
+        { password: "rahasia123", confirmation: "berbeda123" },
+        client,
+      ),
+    ).rejects.toThrow("Konfirmasi password belum sama.")
+    expect(auth.updateUser).not.toHaveBeenCalled()
+  })
+
+  it("notifies the application only for a password recovery event", () => {
+    const { client, auth } = createClientMock()
+    const callback = vi.fn()
+
+    onPasswordRecovery(callback, client)
+    const authListener = auth.onAuthStateChange.mock.calls[0]?.[0]
+
+    authListener?.("SIGNED_IN")
+    authListener?.("PASSWORD_RECOVERY")
+    expect(callback).toHaveBeenCalledOnce()
   })
 })

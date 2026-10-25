@@ -2,12 +2,17 @@ import { lazy, Suspense, useEffect, useState } from "react"
 
 import {
   getCurrentAuthenticatedUser,
+  onPasswordRecovery,
+  requestPasswordReset,
   signInWithPassword,
   signOut,
+  updatePassword,
   type AuthenticatedUser,
   type LoginCredentials,
+  type PasswordUpdate,
 } from "@/features/auth/auth.service"
 import { LoginPage } from "@/features/auth/login-page"
+import { PasswordRecoveryPage } from "@/features/auth/password-recovery-page"
 import { USER_ROLE_LABELS } from "@/features/auth/auth.types"
 import { AdminDashboard } from "@/features/dashboard/admin-dashboard"
 import {
@@ -123,6 +128,22 @@ type AppState =
   | { status: "signed_out" }
   | { status: "signed_in"; account: AuthenticatedUser }
 
+type AuthView = "login" | "request-password" | "update-password"
+
+function getPasswordRecoveryError(hash: string): string {
+  const params = new URLSearchParams(hash.replace(/^#/, ""))
+
+  return params.get("error_code") === "otp_expired"
+    ? "Tautan reset tidak valid atau sudah kedaluwarsa. Minta tautan baru melalui menu Lupa password."
+    : ""
+}
+
+function isPasswordRecoveryRedirect(hash: string): boolean {
+  const params = new URLSearchParams(hash.replace(/^#/, ""))
+
+  return params.get("type") === "recovery" && params.has("access_token")
+}
+
 function PageLoadingState() {
   return (
     <main className="grid min-h-screen place-items-center bg-[var(--rapotku-canvas)] p-6">
@@ -138,6 +159,14 @@ function PageLoadingState() {
 
 export function App() {
   const [appState, setAppState] = useState<AppState>({ status: "loading" })
+  const [authView, setAuthView] = useState<AuthView>(() =>
+    isPasswordRecoveryRedirect(window.location.hash)
+      ? "update-password"
+      : "login",
+  )
+  const [authNotice, setAuthNotice] = useState(() =>
+    getPasswordRecoveryError(window.location.hash),
+  )
   const [adminView, setAdminView] = useState<
     | "dashboard"
     | "school-settings"
@@ -176,6 +205,15 @@ export function App() {
   >("dashboard")
   const [schoolIdentity, setSchoolIdentity] = useState<SchoolIdentity | null>(
     null,
+  )
+
+  useEffect(
+    () =>
+      onPasswordRecovery(() => {
+        setAuthView("update-password")
+        setAuthNotice("")
+      }),
+    [],
   )
 
   useEffect(() => {
@@ -231,12 +269,47 @@ export function App() {
     setAppState({ status: "signed_in", account })
   }
 
+  async function handleRequestPasswordReset(email: string) {
+    await requestPasswordReset(email, `${window.location.origin}/`)
+  }
+
+  async function handleUpdatePassword(input: PasswordUpdate) {
+    await updatePassword(input)
+    const account = await getCurrentAuthenticatedUser()
+
+    if (!account) {
+      setAuthNotice("Password berhasil diperbarui. Silakan masuk kembali.")
+      setAuthView("login")
+      setAppState({ status: "signed_out" })
+      return
+    }
+
+    window.history.replaceState({}, document.title, window.location.pathname)
+    setAuthView("login")
+    setAppState({ status: "signed_in", account })
+  }
+
   async function handleLogout() {
     await signOut()
     setAdminView("dashboard")
     setHomeroomView("dashboard")
     setSubjectTeacherView("dashboard")
     setAppState({ status: "signed_out" })
+  }
+
+  if (authView === "update-password") {
+    return (
+      <PasswordRecoveryPage
+        mode="update"
+        schoolName={schoolIdentity?.schoolName}
+        onBack={() => {
+          setAuthView("login")
+          setAppState({ status: "signed_out" })
+        }}
+        onRequestReset={handleRequestPasswordReset}
+        onUpdatePassword={handleUpdatePassword}
+      />
+    )
   }
 
   if (appState.status === "loading") {
@@ -253,10 +326,27 @@ export function App() {
   }
 
   if (appState.status === "signed_out") {
+    if (authView === "request-password") {
+      return (
+        <PasswordRecoveryPage
+          mode="request"
+          schoolName={schoolIdentity?.schoolName}
+          onBack={() => setAuthView("login")}
+          onRequestReset={handleRequestPasswordReset}
+          onUpdatePassword={handleUpdatePassword}
+        />
+      )
+    }
+
     return (
       <LoginPage
         schoolName={schoolIdentity?.schoolName}
+        noticeMessage={authNotice}
         onLogin={handleLogin}
+        onForgotPassword={() => {
+          setAuthNotice("")
+          setAuthView("request-password")
+        }}
       />
     )
   }

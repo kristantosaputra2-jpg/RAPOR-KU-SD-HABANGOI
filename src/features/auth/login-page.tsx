@@ -18,10 +18,17 @@ import { MotionHeroImage } from "@/components/motion-hero-image"
 
 type LoginPageProps = Readonly<{
   schoolName?: string
+  noticeMessage?: string
   onLogin: (credentials: LoginCredentials) => Promise<void>
+  onForgotPassword?: () => void
 }>
 
-export function LoginPage({ schoolName, onLogin }: LoginPageProps) {
+export function LoginPage({
+  schoolName,
+  noticeMessage,
+  onLogin,
+  onForgotPassword,
+}: LoginPageProps) {
   const [showPassword, setShowPassword] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState("")
@@ -124,6 +131,14 @@ export function LoginPage({ schoolName, onLogin }: LoginPageProps) {
           </p>
 
           <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
+            {noticeMessage ? (
+              <p
+                className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900"
+                role="status"
+              >
+                {noticeMessage}
+              </p>
+            ) : null}
             <div>
               <label
                 className="mb-2 block text-sm font-semibold"
@@ -183,6 +198,16 @@ export function LoginPage({ schoolName, onLogin }: LoginPageProps) {
                   ) : (
                     <Eye aria-hidden="true" size={20} />
                   )}
+                </button>
+              </div>
+              <div className="mt-2 text-right">
+                <button
+                  className="min-h-11 rounded-lg px-2 text-sm font-semibold text-[var(--rapotku-brand)] hover:bg-[var(--rapotku-brand-soft)] focus-visible:outline-2 focus-visible:outline-[var(--rapotku-brand)]"
+                  type="button"
+                  onClick={onForgotPassword}
+                  disabled={isSubmitting}
+                >
+                  Lupa password?
                 </button>
               </div>
             </div>

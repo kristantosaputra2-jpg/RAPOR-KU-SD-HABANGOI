@@ -83,7 +83,7 @@ Fungsinya:
 - [x] Konfigurasi environment development
 - [x] Konfigurasi Supabase client
 - [x] Buat auth flow
-  - Service email/password, UI login responsif, pemulihan session, logout lokal, loading, dan pesan error aman sudah tersedia serta terverifikasi dengan akun Admin nyata.
+  - Service email/password, UI login responsif, lupa password mandiri, halaman pembuatan password baru dari tautan recovery, pemulihan session, logout lokal, loading, dan pesan error aman sudah tersedia.
 - [x] Buat role pengguna
   - Identifier/label TypeScript dan enum database menggunakan `admin`, `homeroom_teacher`, dan `subject_teacher`.
 - [/] Aktifkan Row Level Security
@@ -97,7 +97,7 @@ Fungsinya:
 - [x] Buat semester
   - Semester 1 dan 2 dapat ditambahkan per tahun ajaran; aktivasi semester sekaligus menyelaraskan tahun ajaran aktif secara atomik.
 - [x] Test login/logout
-  - Unit dan UI test lulus; login dan logout nyata terverifikasi pada preview lokal dengan Supabase cloud.
+  - Unit dan UI test lulus; login dan logout nyata terverifikasi pada preview lokal dengan Supabase cloud. Alur lupa password dan tampilan HP 360px/390px juga terverifikasi.
 - [x] Test session persistence
   - Unit test lulus; sesi Admin tetap aktif setelah preview dimulai ulang dan halaman dimuat ulang.
 
@@ -664,7 +664,7 @@ Task di bawah ini tidak boleh dikerjakan sebelum MVP selesai kecuali ada perubah
 | Grade Engine        | In Progress |      95% | Input seluruh CP kelas 1–6 tersedia; Admin mengakses semua data, Wali Kelas semua mapel kelas sendiri, dan Guru Mapel hanya penugasannya |
 | Report Engine       | Done        |     100% | Template resmi A4 disetujui; Chrome desktop, simulasi Android, browser print, dan Save as PDF telah diverifikasi           |
 | Leger               | Done        |     100% | Leger kelas 1–6 responsif; cetak A4 landscape dan ekspor CSV tersedia untuk kedua kelompok kelas                            |
-| Testing             | In Progress |      92% | 226 unit/integration test lulus; policy produksi, Chrome desktop, simulasi Android, cetak A4, dan build telah diverifikasi; smoke test login Wali Kelas tersisa |
+| Testing             | In Progress |      92% | 236 unit/integration test lulus; policy produksi, Chrome desktop, simulasi Android, cetak A4, dan build telah diverifikasi; smoke test login Wali Kelas tersisa |
 | Cloudflare          | Done        |     100% | Pages gratis aktif, terhubung ke GitHub `main`, dan memakai konfigurasi Supabase produksi                                  |
 | Production          | In Progress |      20% | Deployment awal aktif; audit RLS, periode akademik, preview rapor, cetak, dan backup masih harus diverifikasi             |
 
@@ -717,6 +717,7 @@ Task di bawah ini tidak boleh dikerjakan sebelum MVP selesai kecuali ada perubah
 - [x] Tetapkan Auth Site URL dan satu-satunya Redirect URL ke `https://sdn-tbghabangoi.pages.dev/`; hapus redirect deployment lama `rapotku-sdtbgkawei.pages.dev` sesuai persetujuan pengguna.
 - [x] Buat dan push repository publik baru `kristantosaputra2-jpg/RAPOR-KU-SD-HABANGOI` tanpa mengubah repository lama.
 - [x] Deploy project Cloudflare Pages `sdn-tbghabangoi` dari branch `main` dengan konfigurasi Supabase project baru, lalu verifikasi halaman login produksi menampilkan identitas SD Negeri Tumbang Habangoi.
+- [x] Tambahkan menu `Lupa password?`, pengiriman tautan recovery tanpa membuka dashboard Supabase, halaman `Buat password baru`, penanganan tautan kedaluwarsa, serta verifikasi 236 test dan UI HP 360px/390px.
 
 ## 2026-08-31
 

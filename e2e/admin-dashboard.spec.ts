@@ -968,6 +968,26 @@ for (const viewport of mobileViewports.slice(0, 2)) {
       0.02,
     )
   })
+
+  test(`lupa password nyaman pada ${viewport.width}px`, async ({ page }) => {
+    await page.setViewportSize(viewport)
+    await openSignedOutLogin(page)
+
+    await page.getByRole("button", { name: "Lupa password?" }).click()
+    await expect(
+      page.getByRole("heading", { name: "Lupa password" }),
+    ).toBeVisible()
+    await expect(
+      page.getByRole("button", { name: "Kirim tautan reset" }),
+    ).toBeVisible()
+
+    const layout = await page.evaluate(() => ({
+      clientWidth: document.documentElement.clientWidth,
+      scrollWidth: document.documentElement.scrollWidth,
+    }))
+
+    expect(layout.scrollWidth).toBe(layout.clientWidth)
+  })
 }
 
 for (const viewport of mobileViewports) {
