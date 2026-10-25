@@ -593,9 +593,10 @@ Fungsinya:
   - Seluruh 37 migration fitur dan 1 migration pengamanan fungsi internal sudah sinkron pada project baru `pkpsxdmvtbsxdopnnsqv`.
 - [/] RLS verified
   - Security Advisor tidak menemukan error maupun warning dan schema lint bersih; uji login per role pada project baru masih diperlukan.
-- [x] Admin account verified
+- [/] Admin account verified
+  - Pengguna `suchikristin37@gmail.com` sudah diundang dan profilnya aktif sebagai `admin`; penerimaan undangan, pembuatan password, dan login nyata masih diperlukan.
 - [/] Identitas sekolah verified
-  - Nama sekolah `SD Negeri Tumbang Kawei` sudah tersimpan dan terverifikasi; NPSN, alamat, dan identitas kepala sekolah belum diberikan.
+  - Nama `SD Negeri Tumbang Habangoi` dan email `suchikristin37@gmail.com` sudah tersimpan pada project baru; NPSN, alamat, dan identitas kepala sekolah belum diberikan.
 - [ ] Tahun ajaran verified
 - [ ] Semester verified
 - [ ] Teacher assignment verified
@@ -710,6 +711,8 @@ Task di bawah ini tidak boleh dikerjakan sebelum MVP selesai kecuali ada perubah
 - [x] Hubungkan Supabase CLI lokal ke project baru tanpa menghapus atau menimpa project lama.
 - [x] Terapkan 37 migration lokal ke project baru lalu verifikasi RLS dan advisor sebelum mengganti environment aplikasi.
 - [x] Cabut akses `public`, `anon`, dan `authenticated` dari fungsi internal `public.rls_auto_enable()`; Security Advisor kembali bersih tanpa error atau warning.
+- [x] Undang `suchikristin37@gmail.com`, aktifkan profil sebagai `admin`, dan verifikasi hasil query `role = admin`, `is_active = true`.
+- [x] Simpan identitas awal `SD Negeri Tumbang Habangoi` dengan email `suchikristin37@gmail.com`; field identitas yang belum diberikan tetap kosong.
 
 ## 2026-08-31
 
