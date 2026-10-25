@@ -594,7 +594,7 @@ Fungsinya:
 - [/] RLS verified
   - Security Advisor tidak menemukan error maupun warning dan schema lint bersih; uji login per role pada project baru masih diperlukan.
 - [/] Admin account verified
-  - Pengguna `suchikristin37@gmail.com` sudah diundang dan profilnya aktif sebagai `admin`; penerimaan undangan, pembuatan password, dan login nyata masih diperlukan.
+  - Pengguna `suchikristin37@gmail.com` sudah menerima undangan, berstatus confirmed, pernah sign-in, dan profilnya aktif sebagai `admin`; login pada aplikasi produksi masih menunggu pemindahan environment ke project baru.
 - [/] Identitas sekolah verified
   - Nama `SD Negeri Tumbang Habangoi` dan email `suchikristin37@gmail.com` sudah tersimpan pada project baru; NPSN, alamat, dan identitas kepala sekolah belum diberikan.
 - [ ] Tahun ajaran verified
@@ -713,6 +713,7 @@ Task di bawah ini tidak boleh dikerjakan sebelum MVP selesai kecuali ada perubah
 - [x] Cabut akses `public`, `anon`, dan `authenticated` dari fungsi internal `public.rls_auto_enable()`; Security Advisor kembali bersih tanpa error atau warning.
 - [x] Undang `suchikristin37@gmail.com`, aktifkan profil sebagai `admin`, dan verifikasi hasil query `role = admin`, `is_active = true`.
 - [x] Simpan identitas awal `SD Negeri Tumbang Habangoi` dengan email `suchikristin37@gmail.com`; field identitas yang belum diberikan tetap kosong.
+- [x] Perbaiki Auth Site URL dan Redirect URL dari `http://localhost:3000` ke `https://rapotku-sdtbgkawei.pages.dev/`; verifikasi akun undangan sudah confirmed dan pernah sign-in.
 
 ## 2026-08-31
 
