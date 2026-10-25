@@ -589,8 +589,10 @@ Fungsinya:
 ## Production Readiness
 
 - [ ] Supabase production ready
-- [ ] Migration applied
-- [ ] RLS verified
+- [x] Migration applied
+  - Seluruh 37 migration fitur dan 1 migration pengamanan fungsi internal sudah sinkron pada project baru `pkpsxdmvtbsxdopnnsqv`.
+- [/] RLS verified
+  - Security Advisor tidak menemukan error maupun warning dan schema lint bersih; uji login per role pada project baru masih diperlukan.
 - [x] Admin account verified
 - [/] Identitas sekolah verified
   - Nama sekolah `SD Negeri Tumbang Kawei` sudah tersimpan dan terverifikasi; NPSN, alamat, dan identitas kepala sekolah belum diberikan.
@@ -701,6 +703,13 @@ Task di bawah ini tidak boleh dikerjakan sebelum MVP selesai kecuali ada perubah
 ---
 
 # 📝 Update Log
+
+## 2026-10-25
+
+- [x] Verifikasi project Supabase Free baru `pkpsxdmvtbsxdopnnsqv` milik `suchikristin37@gmail.com` berstatus sehat dan masih kosong.
+- [x] Hubungkan Supabase CLI lokal ke project baru tanpa menghapus atau menimpa project lama.
+- [x] Terapkan 37 migration lokal ke project baru lalu verifikasi RLS dan advisor sebelum mengganti environment aplikasi.
+- [x] Cabut akses `public`, `anon`, dan `authenticated` dari fungsi internal `public.rls_auto_enable()`; Security Advisor kembali bersih tanpa error atau warning.
 
 ## 2026-08-31
 
