@@ -409,8 +409,10 @@ Fungsinya:
 - [x] Print satu siswa
 - [x] Batch print satu kelas
 - [x] Pastikan hasil preview = hasil cetak
-- [x] Render dan periksa contoh cetak lima halaman A4
-  - Ukuran terverifikasi A4 portrait; nama siswa panjang, deskripsi panjang, tabel lintas halaman, kepala tabel berulang, field kosong, dan batas halaman diperiksa secara visual.
+- [x] Tambahkan grafik ringkasan nilai sebagai lembar terakhir rapor
+  - Grafik batang menampilkan nilai Pengetahuan dan Keterampilan per mata pelajaran secara terpisah tanpa menghitung formula baru atau menambah dependency.
+- [x] Render dan periksa contoh cetak tujuh halaman A4
+  - Ukuran terverifikasi A4 portrait; nama siswa panjang, deskripsi panjang, tabel lintas halaman, kepala tabel berulang, field kosong, batas halaman, dan grafik lembar terakhir diperiksa secara visual.
 
 ## Leger Kelas 1–3
 
@@ -664,7 +666,7 @@ Task di bawah ini tidak boleh dikerjakan sebelum MVP selesai kecuali ada perubah
 | Grade Engine        | In Progress |      95% | Input seluruh CP kelas 1–6 tersedia; Admin mengakses semua data, Wali Kelas semua mapel kelas sendiri, dan Guru Mapel hanya penugasannya |
 | Report Engine       | Done        |     100% | Template resmi A4 disetujui; Chrome desktop, simulasi Android, browser print, dan Save as PDF telah diverifikasi           |
 | Leger               | Done        |     100% | Leger kelas 1–6 responsif; cetak A4 landscape dan ekspor CSV tersedia untuk kedua kelompok kelas                            |
-| Testing             | In Progress |      92% | 236 unit/integration test lulus; policy produksi, Chrome desktop, simulasi Android, cetak A4, dan build telah diverifikasi; smoke test login Wali Kelas tersisa |
+| Testing             | In Progress |      92% | 237 unit/integration test lulus; policy produksi, Chrome desktop, simulasi Android, cetak A4, dan build telah diverifikasi; smoke test login Wali Kelas tersisa |
 | Cloudflare          | Done        |     100% | Pages gratis aktif, terhubung ke GitHub `main`, dan memakai konfigurasi Supabase produksi                                  |
 | Production          | In Progress |      20% | Deployment awal aktif; audit RLS, periode akademik, preview rapor, cetak, dan backup masih harus diverifikasi             |
 
@@ -718,6 +720,7 @@ Task di bawah ini tidak boleh dikerjakan sebelum MVP selesai kecuali ada perubah
 - [x] Buat dan push repository publik baru `kristantosaputra2-jpg/RAPOR-KU-SD-HABANGOI` tanpa mengubah repository lama.
 - [x] Deploy project Cloudflare Pages `sdn-tbghabangoi` dari branch `main` dengan konfigurasi Supabase project baru, lalu verifikasi halaman login produksi menampilkan identitas SD Negeri Tumbang Habangoi.
 - [x] Tambahkan menu `Lupa password?`, pengiriman tautan recovery tanpa membuka dashboard Supabase, halaman `Buat password baru`, penanganan tautan kedaluwarsa, serta verifikasi 236 test dan UI HP 360px/390px.
+- [x] Tambahkan lembar grafik nilai pada halaman terakhir cetak rapor, gunakan komponen nilai yang sudah ada, lalu verifikasi 237 test, build, dan PDF tujuh halaman A4.
 
 ## 2026-08-31
 

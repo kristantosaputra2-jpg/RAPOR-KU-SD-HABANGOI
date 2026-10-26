@@ -108,11 +108,30 @@ describe("ReportPreviewTemplate", () => {
       Node.DOCUMENT_POSITION_FOLLOWING,
     )
     expect(screen.getByText("IDENTITAS PESERTA DIDIK")).toBeInTheDocument()
-    expect(screen.getByText("Pengetahuan")).toBeInTheDocument()
-    expect(screen.getByText("Keterampilan")).toBeInTheDocument()
+    expect(screen.getAllByText("Pengetahuan").length).toBeGreaterThan(0)
+    expect(screen.getAllByText("Keterampilan").length).toBeGreaterThan(0)
     const photoFrame = screen.getByLabelText("Foto siswa ukuran 3 kali 4")
     expect(photoFrame.parentElement).toHaveClass("report-identity-approval")
     expect(screen.queryByText("Tinggi Badan")).not.toBeInTheDocument()
     expect(screen.queryByText("Kondisi Kesehatan")).not.toBeInTheDocument()
+    const sheets = container.querySelectorAll(".report-sheet")
+    expect(sheets[sheets.length - 1]).toHaveClass("report-chart-sheet")
+    expect(
+      screen.getByRole("heading", { name: "Grafik Ringkasan Hasil Belajar" }),
+    ).toBeInTheDocument()
+    expect(container.querySelector(".report-chart-bar--knowledge")).toHaveStyle(
+      { width: "84%" },
+    )
+    expect(container.querySelector(".report-chart-bar--skills")).toHaveStyle({
+      width: "86%",
+    })
+  })
+
+  it("menampilkan empty state grafik ketika nilai mapel belum tersedia", () => {
+    render(<ReportPreviewTemplate report={{ ...report, subjects: [] }} />)
+
+    expect(
+      screen.getByText("Nilai mata pelajaran belum tersedia."),
+    ).toBeVisible()
   })
 })

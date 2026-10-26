@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
 
 import type { ReportViewModel } from "./report-view-model"
+import { ReportSummaryChart } from "./report-summary-chart"
 
 type Props = Readonly<{ report: ReportViewModel }>
 
@@ -369,6 +370,7 @@ export function ReportPreviewTemplate({ report }: Props) {
           />
         </div>
       </article>
+      <ReportSummaryChart report={report} />
     </div>
   )
 }
