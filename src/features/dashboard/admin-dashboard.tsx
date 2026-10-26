@@ -43,6 +43,7 @@ type AdminDashboardProps = Readonly<{
   onOpenTeachers: () => void
   onOpenClasses: () => void
   onOpenStudents: () => void
+  onOpenStudentYearEnd?: () => void
   onOpenSubjects: () => void
   onOpenAssignments?: () => void
   onOpenLearningOutcomes?: () => void
@@ -67,6 +68,7 @@ type NavigationItem = Readonly<{
     | "teachers"
     | "classes"
     | "students"
+    | "student-year-end"
     | "subjects"
     | "assignments"
     | "learning-outcomes"
@@ -106,6 +108,11 @@ const navigationGroups: ReadonlyArray<
       { label: "Data Guru", icon: UserCheck, action: "teachers" },
       { label: "Data Kelas", icon: GraduationCap, action: "classes" },
       { label: "Data Siswa", icon: Users, action: "students" },
+      {
+        label: "Naik Kelas & Lulus",
+        icon: GraduationCap,
+        action: "student-year-end",
+      },
       { label: "Mata Pelajaran", icon: BookOpen, action: "subjects" },
       { label: "Penugasan Guru", icon: ClipboardList, action: "assignments" },
       { label: "CP / Deskripsi", icon: Target, action: "learning-outcomes" },
@@ -205,6 +212,7 @@ function DashboardNavigation({
   onOpenTeachers,
   onOpenClasses,
   onOpenStudents,
+  onOpenStudentYearEnd,
   onOpenSubjects,
   onOpenAssignments,
   onOpenLearningOutcomes,
@@ -223,6 +231,7 @@ function DashboardNavigation({
   onOpenTeachers: () => void
   onOpenClasses: () => void
   onOpenStudents: () => void
+  onOpenStudentYearEnd: () => void
   onOpenSubjects: () => void
   onOpenAssignments: () => void
   onOpenLearningOutcomes: () => void
@@ -275,6 +284,8 @@ function DashboardNavigation({
                           onOpenClasses()
                         } else if (item.action === "students") {
                           onOpenStudents()
+                        } else if (item.action === "student-year-end") {
+                          onOpenStudentYearEnd()
                         } else if (item.action === "assignments") {
                           onOpenAssignments()
                         } else if (item.action === "learning-outcomes") {
@@ -369,6 +380,7 @@ export function AdminDashboard({
   onOpenTeachers,
   onOpenClasses,
   onOpenStudents,
+  onOpenStudentYearEnd = () => undefined,
   onOpenSubjects,
   onOpenAssignments = () => undefined,
   onOpenLearningOutcomes = () => undefined,
@@ -520,6 +532,7 @@ export function AdminDashboard({
           onOpenTeachers={onOpenTeachers}
           onOpenClasses={onOpenClasses}
           onOpenStudents={onOpenStudents}
+          onOpenStudentYearEnd={onOpenStudentYearEnd}
           onOpenSubjects={onOpenSubjects}
           onOpenAssignments={onOpenAssignments}
           onOpenLearningOutcomes={onOpenLearningOutcomes}
@@ -889,6 +902,10 @@ export function AdminDashboard({
               onOpenStudents={() => {
                 setIsMenuOpen(false)
                 onOpenStudents()
+              }}
+              onOpenStudentYearEnd={() => {
+                setIsMenuOpen(false)
+                onOpenStudentYearEnd()
               }}
               onOpenSubjects={() => {
                 setIsMenuOpen(false)

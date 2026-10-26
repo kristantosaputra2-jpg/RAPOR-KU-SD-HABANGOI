@@ -91,6 +91,7 @@ Keterangan: `R` membaca, `C` menambah, `U` mengubah, `D` menghapus, dan `—` ti
 | `classes`                               | R/C/U              | R (kelas sendiri)             | R (kelas ditugaskan)                                      | —         |
 | `students`                              | R/C/U              | R (kelas sendiri)             | R (kelas ditugaskan, siswa aktif)                         | —         |
 | `class_members`                         | R/C/U/D            | R (kelas sendiri)             | R (kelas ditugaskan)                                      | —         |
+| `student_year_end_actions`              | R/C melalui fungsi | —                             | —                                                         | —         |
 | `student_biodata`                       | R/C/U              | R/C/U (kelas sendiri)         | —                                                         | —         |
 | `subjects`                              | R/C/U              | R (mapel aktif)               | R (mapel ditugaskan dan aktif)                            | —         |
 | `student_religion_subject_overrides`    | R/C/U/D            | R/C/U/D (kelas sendiri)       | R (kelas/mapel ditugaskan)                                | —         |
@@ -109,6 +110,8 @@ Keterangan: `R` membaca, `C` menambah, `U` mengubah, `D` menghapus, dan `—` ti
 | `report_completion_confirmations`       | R/C/U              | R/C/U (kelas sendiri)         | —                                                         | —         |
 
 Matriks ini mencatat policy efektif dari migration saat ini. Hak produk yang belum memiliki policy tidak boleh dianggap sudah aman hanya karena menunya tersedia.
+
+Kenaikan kelas dan kelulusan hanya dapat diproses Admin aktif melalui fungsi database atomik. Wali Kelas dan Guru Mata Pelajaran tidak dapat membuat atau mengubah catatan akhir tahun.
 
 Untuk mapel dengan `subjects.religion_scope`, izin kelas dan penugasan tetap berlaku seperti tabel di atas. Admin atau Wali Kelas dapat memilih satu mapel agama pengganti per siswa dan semester; Guru Mata Pelajaran hanya dapat membacanya. Validasi database membatasi nilai dan deskripsi ke mapel agama efektif tersebut, atau ke agama biodata jika tidak ada pengganti. Mapel dengan nilai `null` tetap berlaku bagi seluruh siswa.
 

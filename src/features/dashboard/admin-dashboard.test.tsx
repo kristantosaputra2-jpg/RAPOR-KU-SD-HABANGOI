@@ -106,6 +106,30 @@ describe("AdminDashboard", () => {
     expect(screen.queryByLabelText("Menu Admin")).not.toBeInTheDocument()
   })
 
+  it("membuka menu Naik Kelas dan Lulus", async () => {
+    const user = userEvent.setup()
+    const onOpenStudentYearEnd = vi.fn()
+    render(
+      <AdminDashboard
+        userName="Admin Sekolah"
+        schoolName="SD Negeri Tumbang Kawei"
+        onLogout={vi.fn()}
+        onOpenSchoolSettings={vi.fn()}
+        onOpenAcademicPeriods={vi.fn()}
+        onOpenTeachers={vi.fn()}
+        onOpenClasses={vi.fn()}
+        onOpenStudents={vi.fn()}
+        onOpenStudentYearEnd={onOpenStudentYearEnd}
+        onOpenSubjects={vi.fn()}
+      />,
+    )
+
+    await user.click(
+      screen.getAllByRole("button", { name: "Naik Kelas & Lulus" })[0],
+    )
+    expect(onOpenStudentYearEnd).toHaveBeenCalledOnce()
+  })
+
   it("menampilkan pesan aman ketika logout gagal", async () => {
     const user = userEvent.setup()
     const onLogout = vi.fn().mockRejectedValue(new Error("network error"))

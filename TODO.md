@@ -206,6 +206,8 @@ Fungsinya:
   - Data tidak dihapus dan dapat diaktifkan kembali.
 - [x] Assign siswa ke kelas
   - Penempatan dipisahkan dalam `class_members` agar riwayat kelas per semester tetap tersimpan.
+- [x] Tambahkan menu Naik Kelas dan Lulus
+  - Admin memproses siswa kelas 1–5 ke Semester 1 tahun berikutnya dan menandai kelas 6 lulus tanpa menghapus riwayat.
 - [x] Validasi NIS
   - NIS wajib, unik, maksimal 30 karakter, dan tetap disimpan sebagai teks agar angka nol di depan tidak hilang.
 - [x] Validasi NISN
@@ -266,6 +268,9 @@ Fungsinya:
 # 🟢 Feature Development
 
 ## Input Nilai Kelas 1–3
+
+- [ ] Tambahkan penilaian Formatif dan Sumatif sejak awal semester
+  - Formatif mencakup nilai harian, latihan, tugas, dan penilaian proses lain. Sumatif mencakup Penilaian Tengah Semester dan Penilaian Akhir Semester. Rumus/bobot masih menunggu keputusan.
 
 - [x] Pisahkan nilai Pengetahuan dan Keterampilan per CP sesuai keputusan terbaru sekolah
 - [x] Dukung Single KKM seluruh mapel atau Multi KKM per mapel
@@ -670,7 +675,7 @@ Task di bawah ini tidak boleh dikerjakan sebelum MVP selesai kecuali ada perubah
 | Grade Engine        | In Progress |      95% | Input seluruh CP kelas 1–6 tersedia; Admin mengakses semua data, Wali Kelas semua mapel kelas sendiri, dan Guru Mapel hanya penugasannya                        |
 | Report Engine       | Done        |     100% | Template resmi A4 disetujui; Chrome desktop, simulasi Android, browser print, dan Save as PDF telah diverifikasi                                                |
 | Leger               | Done        |     100% | Leger kelas 1–6 responsif; cetak A4 landscape dan ekspor CSV tersedia untuk kedua kelompok kelas                                                                |
-| Testing             | In Progress |      92% | 245 unit/integration test lulus; policy produksi, Chrome desktop, simulasi Android, cetak A4, dan build telah diverifikasi; smoke test login Wali Kelas tersisa |
+| Testing             | In Progress |      92% | 250 unit/integration test lulus; policy produksi, Chrome desktop, simulasi Android, cetak A4, dan build telah diverifikasi; smoke test login Wali Kelas tersisa |
 | Cloudflare          | Done        |     100% | Pages gratis aktif, terhubung ke GitHub `main`, dan memakai konfigurasi Supabase produksi                                                                       |
 | Production          | In Progress |      20% | Deployment awal aktif; audit RLS, periode akademik, preview rapor, cetak, dan backup masih harus diverifikasi                                                   |
 
@@ -722,6 +727,9 @@ Task di bawah ini tidak boleh dikerjakan sebelum MVP selesai kecuali ada perubah
 - [x] Tambahkan penggantian mapel agama manual per siswa/semester untuk Admin dan Wali Kelas tanpa mengubah biodata agama; Guru Mapel hanya membaca hasil pengelompokan.
 - [x] Terapkan migration `20261026020902_add_student_religion_subject_overrides.sql` dengan RLS dan validasi agar perubahan tidak menyembunyikan nilai/deskripsi lama.
 - [x] Verifikasi 245 unit/integration test, E2E penggantian agama pada viewport 390px, lint, format, TypeScript, production build, database lint, dan kesamaan migration lokal-produksi.
+- [x] Tambahkan menu Admin Naik Kelas & Lulus: kelas 1–5 dipindahkan ke kelas berikutnya, kelas 6 diarsipkan dari daftar aktif, dan seluruh riwayat akademik tetap tersimpan.
+- [x] Terapkan migration `20261026081337_add_student_year_end_progression.sql` dengan transaksi atomik, validasi semester/tahun/jenjang, audit tindakan, dan RLS khusus Admin.
+- [x] Verifikasi 250 unit/integration test, 4 responsive E2E pada 360/390/768/1280px, TypeScript, lint, format, production build, database lint, dan kesamaan migration lokal-produksi.
 
 ## 2026-10-25
 

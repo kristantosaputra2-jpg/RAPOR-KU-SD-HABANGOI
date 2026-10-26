@@ -45,14 +45,15 @@ Frontend hanya menggunakan publishable key. Secret key dan service-role key tida
 
 ### 4.2 Periode dan Struktur Kelas
 
-| Tabel            | Tujuan                                                    |
-| ---------------- | --------------------------------------------------------- |
-| `academic_years` | Tahun ajaran dan penanda tahun aktif                      |
-| `semesters`      | Semester 1/2 yang berada di dalam tahun ajaran            |
-| `classes`        | Rombel kelas 1–6, wali kelas, periode, dan template group |
-| `class_members`  | Riwayat penempatan siswa pada kelas dan semester          |
+| Tabel                      | Tujuan                                                     |
+| -------------------------- | ---------------------------------------------------------- |
+| `academic_years`           | Tahun ajaran dan penanda tahun aktif                       |
+| `semesters`                | Semester 1/2 yang berada di dalam tahun ajaran             |
+| `classes`                  | Rombel kelas 1–6, wali kelas, periode, dan template group  |
+| `class_members`            | Riwayat penempatan siswa pada kelas dan semester           |
+| `student_year_end_actions` | Audit kenaikan kelas dan kelulusan tanpa menghapus riwayat |
 
-Constraint menjaga agar hanya ada satu tahun ajaran aktif dan satu semester aktif. Siswa hanya boleh memiliki satu kelas dalam semester yang sama.
+Constraint menjaga agar hanya ada satu tahun ajaran aktif dan satu semester aktif. Siswa hanya boleh memiliki satu kelas dalam semester yang sama. Proses akhir tahun hanya menerima kelas Semester 2; kenaikan membuat penempatan Semester 1 tahun berikutnya, sedangkan kelulusan menonaktifkan siswa tanpa menghapus data lama.
 
 ### 4.3 Siswa dan Biodata
 

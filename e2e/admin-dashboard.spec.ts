@@ -607,6 +607,25 @@ async function openStudents(page: Page, width: number) {
   ).toBeVisible()
 }
 
+async function openStudentYearEnd(page: Page, width: number) {
+  if (width < 1024) {
+    await page.getByRole("button", { name: "Buka menu" }).click()
+    await page
+      .getByLabel("Menu Admin")
+      .getByRole("button", { name: "Naik Kelas & Lulus" })
+      .click()
+  } else {
+    await page
+      .getByRole("navigation", { name: "Menu utama" })
+      .getByRole("button", { name: "Naik Kelas & Lulus" })
+      .click()
+  }
+
+  await expect(
+    page.getByRole("heading", { name: "Naik Kelas & Lulus" }),
+  ).toBeVisible()
+}
+
 async function openSubjects(page: Page, width: number) {
   if (width < 1024) {
     await page.getByRole("button", { name: "Buka menu" }).click()
@@ -1303,6 +1322,23 @@ for (const viewport of settingsViewports) {
     await expect(page.getByRole("dialog")).toBeVisible()
     await expect(page.getByLabel(/Nama Lengkap/)).toBeVisible()
     await expect(page.getByLabel(/Kelas Semester Aktif/)).toBeVisible()
+  })
+}
+
+for (const viewport of settingsViewports) {
+  test(`Naik Kelas dan Lulus nyaman pada ${viewport.width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize(viewport)
+    await openAuthenticatedDashboard(page, true)
+    await openStudentYearEnd(page, viewport.width)
+
+    await expect(page.getByLabel("Kelas semester genap")).toBeVisible()
+    const layout = await page.evaluate(() => ({
+      clientWidth: document.documentElement.clientWidth,
+      scrollWidth: document.documentElement.scrollWidth,
+    }))
+    expect(layout.scrollWidth).toBe(layout.clientWidth)
   })
 }
 

@@ -655,6 +655,64 @@ export type Database = {
           },
         ]
       }
+      student_year_end_actions: {
+        Row: {
+          action: string
+          id: string
+          processed_at: string
+          processed_by: string
+          source_class_id: string
+          source_semester_id: string
+          student_id: string
+          target_class_id: string | null
+          target_semester_id: string | null
+        }
+        Insert: {
+          action: string
+          id?: string
+          processed_at?: string
+          processed_by: string
+          source_class_id: string
+          source_semester_id: string
+          student_id: string
+          target_class_id?: string | null
+          target_semester_id?: string | null
+        }
+        Update: {
+          action?: string
+          id?: string
+          processed_at?: string
+          processed_by?: string
+          source_class_id?: string
+          source_semester_id?: string
+          student_id?: string
+          target_class_id?: string | null
+          target_semester_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_year_end_actions_source_class_fkey"
+            columns: ["source_class_id", "source_semester_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id", "semester_id"]
+          },
+          {
+            foreignKeyName: "student_year_end_actions_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_year_end_actions_target_class_fkey"
+            columns: ["target_class_id", "target_semester_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id", "semester_id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -1435,6 +1493,14 @@ export type Database = {
           p_class_id: string
           p_semester_id: string
           p_students: Json
+        }
+        Returns: number
+      }
+      process_student_year_end: {
+        Args: {
+          p_source_class_id: string
+          p_student_ids: string[]
+          p_target_class_id?: string | null
         }
         Returns: number
       }

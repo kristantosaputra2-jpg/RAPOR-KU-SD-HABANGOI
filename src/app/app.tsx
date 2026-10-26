@@ -47,6 +47,11 @@ const StudentPage = lazy(() =>
     default: module.StudentPage,
   })),
 )
+const StudentYearEndPage = lazy(() =>
+  import("@/features/students/student-year-end-page").then((module) => ({
+    default: module.StudentYearEndPage,
+  })),
+)
 const StudentImportPage = lazy(() =>
   import("@/features/students/student-import-page").then((module) => ({
     default: module.StudentImportPage,
@@ -175,6 +180,7 @@ export function App() {
     | "classes"
     | "students"
     | "student-import"
+    | "student-year-end"
     | "subjects"
     | "assignments"
     | "learning-outcomes"
@@ -540,6 +546,19 @@ export function App() {
       )
     }
 
+    if (adminView === "student-year-end") {
+      return (
+        <Suspense fallback={<PageLoadingState />}>
+          <StudentYearEndPage
+            userName={profile.full_name}
+            schoolName={schoolIdentity?.schoolName}
+            onBack={() => setAdminView("dashboard")}
+            onLogout={handleLogout}
+          />
+        </Suspense>
+      )
+    }
+
     if (adminView === "student-import") {
       return (
         <Suspense fallback={<PageLoadingState />}>
@@ -626,6 +645,7 @@ export function App() {
         onOpenTeachers={() => setAdminView("teachers")}
         onOpenClasses={() => setAdminView("classes")}
         onOpenStudents={() => setAdminView("students")}
+        onOpenStudentYearEnd={() => setAdminView("student-year-end")}
         onOpenSubjects={() => setAdminView("subjects")}
         onOpenAssignments={() => setAdminView("assignments")}
         onOpenLearningOutcomes={() => setAdminView("learning-outcomes")}

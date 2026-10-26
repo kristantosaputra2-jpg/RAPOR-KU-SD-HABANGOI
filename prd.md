@@ -338,6 +338,17 @@ Minimal:
 
 Field hanya ditambah jika benar-benar dibutuhkan output rapor.
 
+## 12.1 Naik Kelas dan Lulus
+
+Setelah Semester 2 berakhir, Admin dapat:
+
+- menaikkan siswa kelas 1–5 ke kelas tujuan pada Semester 1 tahun ajaran berikutnya tanpa menginput ulang identitas;
+- meluluskan siswa kelas 6 sehingga siswa keluar dari daftar aktif;
+- memproses siswa terpilih setelah melihat kelas asal dan kelas tujuan;
+- mempertahankan seluruh nilai, rapor, dan riwayat kelas lama.
+
+Siswa lulus tidak dihapus permanen dari database.
+
 ---
 
 # 13. Import Siswa dari Excel
@@ -412,6 +423,13 @@ Tetapi daftar seluruh siswa tetap terlihat dalam satu layar.
 Workflow umum:
 
 `Dashboard → Kelas → Mapel → Daftar Siswa → Isi Nilai → Generate Deskripsi → Edit → Simpan`
+
+Penilaian semester dibagi menjadi:
+
+- **Formatif**: penilaian harian, latihan, tugas, dan penilaian proses lain;
+- **Sumatif**: Penilaian Tengah Semester dan Penilaian Akhir Semester.
+
+Setiap penilaian tetap terkait dengan TP/CP. Rumus atau bobot penggabungan Formatif dan Sumatif ditetapkan pada tahap berikutnya dan tidak boleh diasumsikan oleh sistem.
 
 Pada desktop dapat menggunakan tabel.
 

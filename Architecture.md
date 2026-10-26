@@ -535,6 +535,8 @@ created_at / updated_at
 
 `class_members` menghubungkan `student_id` ke `class_id` dan `semester_id`. Constraint database memastikan satu siswa hanya memiliki satu kelas dalam satu semester. NIS wajib dan unik. NISN boleh kosong untuk kasus siswa yang belum memilikinya; jika diisi harus unik dan terdiri dari 10 angka.
 
+`student_year_end_actions` mencatat tindakan `promoted` atau `graduated` secara immutable per siswa dan semester asal. Fungsi `process_student_year_end` hanya dapat dijalankan Admin aktif dan memproses seluruh siswa terpilih dalam satu transaksi. Kelas 1–5 memperoleh baris `class_members` baru pada Semester 1 tahun ajaran berikutnya; siswa kelas 6 dinonaktifkan dari daftar aktif tanpa menghapus master siswa maupun riwayat rapor. Database memvalidasi semester asal harus Semester 2, kenaikan tepat satu tingkat, dan tahun ajaran tujuan harus berurutan.
+
 `student_biodata` menyimpan data keluarga serta lokasi foto secara terpisah dari identitas inti siswa. Pemisahan ini memungkinkan Wali Kelas melengkapi foto 3×4, nomor telepon, serta nama, pendidikan, pekerjaan, alamat, dan nomor telepon ayah/ibu/wali tanpa memperoleh hak untuk mengubah NIS, NISN, status, atau penempatan kelas. Admin dapat mengelola seluruh biodata; Wali Kelas dibatasi RLS hanya pada siswa dalam kelas yang menjadi tanggung jawabnya. Tinggi/berat badan dan kondisi kesehatan tidak disimpan sesuai keputusan produk terbaru.
 
 Akses baca `students` dan `class_members` untuk Wali Kelas serta Guru Mata Pelajaran mengikuti penugasan aktif. Akses tulis identitas inti siswa tetap khusus Admin.
