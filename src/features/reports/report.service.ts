@@ -55,7 +55,7 @@ async function getReportSources(
     client
       .from("subjects")
       .select(
-        "id,name,code,is_local_content,display_order,is_active,created_at,updated_at",
+        "id,name,code,religion_scope,is_local_content,display_order,is_active,created_at,updated_at",
       )
       .eq("is_active", true)
       .order("display_order")

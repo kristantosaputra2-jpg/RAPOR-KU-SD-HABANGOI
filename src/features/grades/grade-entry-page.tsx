@@ -44,7 +44,10 @@ import {
   getClassMemberships,
   getStudents,
 } from "@/features/students/student.service"
-import { getSubjects } from "@/features/subjects/subject.service"
+import {
+  getSubjects,
+  subjectMatchesStudentReligion,
+} from "@/features/subjects/subject.service"
 import { getTeacherByUserId } from "@/features/teachers/teacher.service"
 import { getGradeClassOptions, getGradeSubjectOptions } from "./grade-access"
 
@@ -163,6 +166,9 @@ export function GradeEntryPage({
   }, [userId, userRole])
 
   const selectedClass = references?.classes.find((item) => item.id === classId)
+  const selectedSubject = references?.subjects.find(
+    (item) => item.id === subjectId,
+  )
   const components = references?.components ?? []
   const activeComponent = components.find((item) => item.id === componentId)
   const classOptions = useMemo(() => {
@@ -206,9 +212,13 @@ export function GradeEntryPage({
         .map((item) => item.student_id),
     )
     return references.students.filter(
-      (item) => item.is_active && ids.has(item.id),
+      (item) =>
+        item.is_active &&
+        ids.has(item.id) &&
+        (!selectedSubject ||
+          subjectMatchesStudentReligion(selectedSubject, item.religion)),
     )
-  }, [references, selectedClass])
+  }, [references, selectedClass, selectedSubject])
 
   useEffect(() => {
     if (!selectedClass || !subjectId) return
@@ -648,7 +658,11 @@ export function GradeEntryPage({
               ) : outcomes.length === 0 ? (
                 <p className="p-8 text-center font-bold">Belum ada CP aktif.</p>
               ) : students.length === 0 ? (
-                <p className="p-8 text-center font-bold">Belum ada siswa.</p>
+                <p className="p-8 text-center font-bold">
+                  {selectedSubject?.religion_scope
+                    ? "Belum ada siswa dengan agama yang sesuai untuk mapel ini."
+                    : "Belum ada siswa."}
+                </p>
               ) : (
                 <>
                   <div className="divide-y divide-[var(--rapotku-border)] md:hidden">

@@ -1171,6 +1171,7 @@ export type Database = {
           is_active: boolean
           is_local_content: boolean
           name: string
+          religion_scope: string | null
           updated_at: string
           updated_by: string
         }
@@ -1183,6 +1184,7 @@ export type Database = {
           is_active?: boolean
           is_local_content?: boolean
           name: string
+          religion_scope?: string | null
           updated_at?: string
           updated_by: string
         }
@@ -1195,6 +1197,7 @@ export type Database = {
           is_active?: boolean
           is_local_content?: boolean
           name?: string
+          religion_scope?: string | null
           updated_at?: string
           updated_by?: string
         }

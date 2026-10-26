@@ -69,7 +69,7 @@ Data kesehatan, tinggi badan, dan berat badan tidak disimpan karena berada di lu
 
 | Tabel                   | Tujuan                                                                        |
 | ----------------------- | ----------------------------------------------------------------------------- |
-| `subjects`              | Master mata pelajaran configurable, urutan, muatan lokal, dan status          |
+| `subjects`              | Master mapel configurable, urutan, muatan lokal, status, dan kelompok agama   |
 | `teacher_assignments`   | Hubungan guru, kelas, mata pelajaran, tahun ajaran, dan semester              |
 | `learning_outcomes`     | CP generik per mata pelajaran, jenjang, dan semester                          |
 | `assessment_components` | Komponen penilaian configurable; awal MVP berisi Pengetahuan dan Keterampilan |
@@ -145,6 +145,7 @@ Diagram menunjukkan alur utama, bukan seluruh foreign key dan indeks.
 - Mode `single` wajib memiliki satu KKM; mode `multi` memakai KKM per mapel.
 - `grade_entries` mengikat siswa, kelas, mapel, CP, komponen, jenjang, dan semester yang konsisten.
 - `report_descriptions` mengikat sumber CP terbaik/terlemah pada scope mapel, jenjang, dan semester yang sama.
+- `subjects.religion_scope` bernilai `null` untuk semua siswa atau salah satu kelompok agama yang didukung; trigger menolak nilai dan deskripsi jika tidak cocok dengan `students.religion`.
 - NIS wajib dan unik.
 - NISN opsional; jika diisi harus terdiri dari 10 angka dan unik.
 - Tahun ajaran serta data historis tidak boleh dihapus hanya karena template berubah.

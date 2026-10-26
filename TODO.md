@@ -241,6 +241,8 @@ Fungsinya:
 
 - [x] Buat master mata pelajaran
 - [x] Mata pelajaran configurable
+- [x] Kelompokkan siswa otomatis pada mapel agama berdasarkan agama di biodata
+  - Admin memilih Islam, Kristen, Katolik, Hindu, Buddha, Konghucu, atau Kepercayaan pada mapel. Mapel umum tetap berlaku untuk semua siswa; input nilai, kelengkapan, rapor, dan leger hanya memakai mapel agama yang sesuai.
 - [x] Tambah muatan lokal
 - [x] Assign mata pelajaran ke kelas
 - [x] Assign guru ke mapel
@@ -666,7 +668,7 @@ Task di bawah ini tidak boleh dikerjakan sebelum MVP selesai kecuali ada perubah
 | Grade Engine        | In Progress |      95% | Input seluruh CP kelas 1–6 tersedia; Admin mengakses semua data, Wali Kelas semua mapel kelas sendiri, dan Guru Mapel hanya penugasannya |
 | Report Engine       | Done        |     100% | Template resmi A4 disetujui; Chrome desktop, simulasi Android, browser print, dan Save as PDF telah diverifikasi           |
 | Leger               | Done        |     100% | Leger kelas 1–6 responsif; cetak A4 landscape dan ekspor CSV tersedia untuk kedua kelompok kelas                            |
-| Testing             | In Progress |      92% | 237 unit/integration test lulus; policy produksi, Chrome desktop, simulasi Android, cetak A4, dan build telah diverifikasi; smoke test login Wali Kelas tersisa |
+| Testing             | In Progress |      92% | 240 unit/integration test lulus; policy produksi, Chrome desktop, simulasi Android, cetak A4, dan build telah diverifikasi; smoke test login Wali Kelas tersisa |
 | Cloudflare          | Done        |     100% | Pages gratis aktif, terhubung ke GitHub `main`, dan memakai konfigurasi Supabase produksi                                  |
 | Production          | In Progress |      20% | Deployment awal aktif; audit RLS, periode akademik, preview rapor, cetak, dan backup masih harus diverifikasi             |
 
@@ -707,6 +709,14 @@ Task di bawah ini tidak boleh dikerjakan sebelum MVP selesai kecuali ada perubah
 ---
 
 # 📝 Update Log
+
+## 2026-10-26
+
+- [x] Tambahkan kelompok agama opsional pada Mata Pelajaran: Islam, Kristen, Katolik, Hindu, Buddha, Konghucu, dan Kepercayaan.
+- [x] Filter siswa Input Nilai otomatis berdasarkan agama pada biodata tanpa daftar anggota mapel manual; mapel umum tetap menampilkan seluruh siswa kelas.
+- [x] Selaraskan kelengkapan rapor, preview/cetak, dan leger agar setiap siswa hanya menerima mapel agama yang sesuai; kolom leger menggabungkan mapel agama berbeda dalam satu kelas.
+- [x] Terapkan migration `20261026013355_add_subject_religion_scope.sql` dan validasi database agar nilai/deskripsi mapel agama tidak dapat disimpan untuk agama siswa yang tidak cocok.
+- [x] Verifikasi 240 unit/integration test, 4 responsive E2E Mata Pelajaran pada 360/390/768/1280px, lint, format, TypeScript build, production build, Supabase dry-run, database lint, migration history, kolom produksi, dan normalisasi variasi nama agama.
 
 ## 2026-10-25
 

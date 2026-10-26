@@ -4,6 +4,7 @@ import {
 } from "@/lib/supabase/client"
 import type { Database } from "@/types/database.types"
 import type { Student } from "@/features/students/student.service"
+import { subjectMatchesStudentReligion } from "@/features/subjects/subject.service"
 import {
   calculateReportCompleteness,
   hasCompleteDescriptions,
@@ -51,6 +52,7 @@ export async function getReportCompleteness(
   const [
     schoolResult,
     assignmentResult,
+    subjectResult,
     outcomeResult,
     componentResult,
     gradeResult,
@@ -72,6 +74,7 @@ export async function getReportCompleteness(
       .eq("class_id", classId)
       .eq("semester_id", semesterId)
       .eq("is_active", true),
+    client.from("subjects").select("id,religion_scope").eq("is_active", true),
     client
       .from("learning_outcomes")
       .select("id,subject_id")
@@ -123,6 +126,7 @@ export async function getReportCompleteness(
   const results = [
     schoolResult,
     assignmentResult,
+    subjectResult,
     outcomeResult,
     componentResult,
     gradeResult,
@@ -183,6 +187,14 @@ export async function getReportCompleteness(
   )
 
   return students.map((student) => {
+    const applicableSubjectIds = subjectIds.filter((subjectId) => {
+      const subject = (subjectResult.data ?? []).find(
+        (item) => item.id === subjectId,
+      )
+      return (
+        !subject || subjectMatchesStudentReligion(subject, student.religion)
+      )
+    })
     const confirmation = confirmationByStudent.get(student.id)
     const hasExtracurricular = extracurricularIds.has(student.id)
     const hasAchievement = achievementIds.has(student.id)
@@ -195,7 +207,7 @@ export async function getReportCompleteness(
     }
     const grades = hasCompleteGrades(
       student.id,
-      subjectIds,
+      applicableSubjectIds,
       outcomes.map((outcome) => ({
         id: outcome.id,
         subjectId: outcome.subject_id,
@@ -205,7 +217,7 @@ export async function getReportCompleteness(
     )
     const descriptions = hasCompleteDescriptions(
       student.id,
-      subjectIds,
+      applicableSubjectIds,
       componentIds,
       descriptionKeys,
     )

@@ -18,7 +18,9 @@ import {
 
 import {
   createSubject,
+  getReligionScopeLabel,
   getSubjects,
+  RELIGION_SCOPE_OPTIONS,
   setSubjectActive,
   updateSubject,
   type Subject,
@@ -36,6 +38,7 @@ type SubjectPageProps = Readonly<{
 const emptyForm: SubjectInput = {
   name: "",
   code: "",
+  religionScope: null,
   isLocalContent: false,
   displayOrder: 1,
 }
@@ -47,6 +50,7 @@ function formFromSubject(subject: Subject): SubjectInput {
   return {
     name: subject.name,
     code: subject.code ?? "",
+    religionScope: subject.religion_scope as SubjectInput["religionScope"],
     isLocalContent: subject.is_local_content,
     displayOrder: subject.display_order,
   }
@@ -503,6 +507,9 @@ export function SubjectPage({
                         <p className="mt-1 text-xs text-[var(--rapotku-muted)]">
                           Kode: {subject.code ?? "Belum diisi"}
                         </p>
+                        <p className="mt-1 text-xs font-semibold text-[var(--rapotku-brand)]">
+                          Siswa: {getReligionScopeLabel(subject.religion_scope)}
+                        </p>
                       </div>
                     </div>
                     <div>
@@ -685,6 +692,34 @@ export function SubjectPage({
                     />
                   </label>
                 </div>
+                <label>
+                  <span className="text-sm font-semibold">
+                    Kelompok Agama Siswa
+                  </span>
+                  <select
+                    className={inputClassName}
+                    value={form.religionScope ?? ""}
+                    onChange={(event) =>
+                      setForm((current) => ({
+                        ...current,
+                        religionScope:
+                          (event.target
+                            .value as SubjectInput["religionScope"]) || null,
+                      }))
+                    }
+                  >
+                    <option value="">Semua siswa (bukan mapel agama)</option>
+                    {RELIGION_SCOPE_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="mt-2 block text-xs leading-5 text-[var(--rapotku-muted)]">
+                    Untuk mapel agama, siswa akan masuk otomatis sesuai agama
+                    pada biodatanya.
+                  </span>
+                </label>
                 <label className="flex min-h-14 cursor-pointer items-center gap-3 rounded-xl border border-[var(--rapotku-border)] p-4">
                   <input
                     className="size-5 accent-[var(--rapotku-brand)]"

@@ -109,6 +109,8 @@ Keterangan: `R` membaca, `C` menambah, `U` mengubah, `D` menghapus, dan `—` ti
 
 Matriks ini mencatat policy efektif dari migration saat ini. Hak produk yang belum memiliki policy tidak boleh dianggap sudah aman hanya karena menunya tersedia.
 
+Untuk mapel dengan `subjects.religion_scope`, izin kelas dan penugasan tetap berlaku seperti tabel di atas, lalu validasi database membatasi penyimpanan nilai dan deskripsi hanya kepada siswa dengan agama yang cocok. Mapel dengan nilai `null` tetap berlaku bagi seluruh siswa.
+
 ### Catatan Implementasi yang Perlu Diaudit
 
 - Guru boleh merangkap sebagai Wali Kelas dan Guru Mata Pelajaran. Role menentukan dashboard utama, sedangkan kepemilikan kelas dan assignment menentukan scope data aktual.

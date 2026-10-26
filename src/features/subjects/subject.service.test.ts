@@ -3,7 +3,9 @@ import { describe, expect, it, vi } from "vitest"
 import {
   createSubject,
   getSubjects,
+  normalizeReligion,
   normalizeSubjectInput,
+  subjectMatchesStudentReligion,
   updateSubject,
   type SubjectInput,
 } from "@/features/subjects/subject.service"
@@ -12,6 +14,7 @@ import type { RapotKuSupabaseClient } from "@/lib/supabase/client"
 const input: SubjectInput = {
   name: "  Bahasa Daerah  ",
   code: " MULOK-01 ",
+  religionScope: null,
   isLocalContent: true,
   displayOrder: 8,
 }
@@ -20,6 +23,7 @@ const savedSubject = {
   id: "subject-1",
   name: "Bahasa Daerah",
   code: "MULOK-01",
+  religion_scope: null,
   is_local_content: true,
   display_order: 8,
   is_active: true,
@@ -32,6 +36,7 @@ describe("subject service", () => {
     expect(normalizeSubjectInput(input)).toEqual({
       name: "Bahasa Daerah",
       code: "MULOK-01",
+      religion_scope: null,
       is_local_content: true,
       display_order: 8,
     })
@@ -39,6 +44,21 @@ describe("subject service", () => {
 
   it("mengizinkan kode kosong", () => {
     expect(normalizeSubjectInput({ ...input, code: "" }).code).toBeNull()
+  })
+
+  it("mencocokkan variasi nama agama dengan kelompok mapel", () => {
+    expect(normalizeReligion("Kristen Protestan")).toBe("christian")
+    expect(normalizeReligion("Khonghucu")).toBe("confucian")
+    expect(normalizeReligion("Penghayat Kepercayaan")).toBe("belief")
+    expect(
+      subjectMatchesStudentReligion({ religion_scope: "catholic" }, "Katolik"),
+    ).toBe(true)
+    expect(
+      subjectMatchesStudentReligion({ religion_scope: "islam" }, "Hindu"),
+    ).toBe(false)
+    expect(
+      subjectMatchesStudentReligion({ religion_scope: null }, "Hindu"),
+    ).toBe(true)
   })
 
   it("menolak urutan di luar batas", () => {
@@ -80,6 +100,7 @@ describe("subject service", () => {
     expect(insert).toHaveBeenCalledWith({
       name: "Bahasa Daerah",
       code: "MULOK-01",
+      religion_scope: null,
       is_local_content: true,
       display_order: 8,
       created_by: "admin-1",
@@ -103,6 +124,7 @@ describe("subject service", () => {
     expect(update).toHaveBeenCalledWith({
       name: "Bahasa Daerah",
       code: "MULOK-01",
+      religion_scope: null,
       is_local_content: true,
       display_order: 8,
       updated_by: "admin-1",

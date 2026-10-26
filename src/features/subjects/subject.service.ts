@@ -5,13 +5,26 @@ import {
 import type { Database, Tables } from "@/types/database.types"
 
 const subjectColumns =
-  "id,name,code,is_local_content,display_order,is_active,created_at,updated_at"
+  "id,name,code,religion_scope,is_local_content,display_order,is_active,created_at,updated_at"
+
+export const RELIGION_SCOPE_OPTIONS = [
+  { value: "islam", label: "Islam" },
+  { value: "christian", label: "Kristen" },
+  { value: "catholic", label: "Katolik" },
+  { value: "hindu", label: "Hindu" },
+  { value: "buddhist", label: "Buddha" },
+  { value: "confucian", label: "Konghucu" },
+  { value: "belief", label: "Kepercayaan" },
+] as const
+
+export type ReligionScope = (typeof RELIGION_SCOPE_OPTIONS)[number]["value"]
 
 export type Subject = Pick<
   Tables<"subjects">,
   | "id"
   | "name"
   | "code"
+  | "religion_scope"
   | "is_local_content"
   | "display_order"
   | "is_active"
@@ -22,6 +35,7 @@ export type Subject = Pick<
 export type SubjectInput = Readonly<{
   name: string
   code: string
+  religionScope: ReligionScope | null
   isLocalContent: boolean
   displayOrder: number
 }>
@@ -29,6 +43,7 @@ export type SubjectInput = Readonly<{
 type NormalizedSubjectInput = Readonly<{
   name: string
   code: string | null
+  religion_scope: ReligionScope | null
   is_local_content: boolean
   display_order: number
 }>
@@ -38,6 +53,44 @@ export class SubjectError extends Error {
     super(message)
     this.name = "SubjectError"
   }
+}
+
+export function normalizeReligion(
+  religion: string | null | undefined,
+): ReligionScope | null {
+  const value = religion?.trim().toLocaleLowerCase("id-ID") ?? ""
+  if (!value) return null
+  if (value.includes("katolik")) return "catholic"
+  if (value.includes("kristen") || value.includes("protestan")) {
+    return "christian"
+  }
+  if (value.includes("islam")) return "islam"
+  if (value.includes("hindu")) return "hindu"
+  if (value.includes("buddha")) return "buddhist"
+  if (value.includes("konghucu") || value.includes("khonghucu")) {
+    return "confucian"
+  }
+  if (value.includes("kepercayaan") || value.includes("penghayat")) {
+    return "belief"
+  }
+  return null
+}
+
+export function subjectMatchesStudentReligion(
+  subject: Pick<Subject, "religion_scope">,
+  religion: string | null | undefined,
+) {
+  return (
+    subject.religion_scope === null ||
+    subject.religion_scope === normalizeReligion(religion)
+  )
+}
+
+export function getReligionScopeLabel(scope: string | null) {
+  return (
+    RELIGION_SCOPE_OPTIONS.find((option) => option.value === scope)?.label ??
+    "Semua siswa"
+  )
 }
 
 function errorCode(error: unknown): string {
@@ -80,6 +133,7 @@ export function normalizeSubjectInput(
   return {
     name,
     code: code || null,
+    religion_scope: input.religionScope,
     is_local_content: input.isLocalContent,
     display_order: input.displayOrder,
   }

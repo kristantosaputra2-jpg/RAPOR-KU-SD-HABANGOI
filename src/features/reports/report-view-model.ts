@@ -16,7 +16,10 @@ import type { AssessmentComponent } from "@/features/grades/grading-settings.ser
 import type { HomeroomNote } from "@/features/homeroom-notes/homeroom-note.service"
 import type { SchoolSettings } from "@/features/schools/school-settings.service"
 import type { Student } from "@/features/students/student.service"
-import type { Subject } from "@/features/subjects/subject.service"
+import {
+  subjectMatchesStudentReligion,
+  type Subject,
+} from "@/features/subjects/subject.service"
 import type { Tables } from "@/types/database.types"
 
 type GradingSetting = Pick<
@@ -183,10 +186,15 @@ function resolveSubjectKkm(subjectId: string, source: ReportSourceData) {
   return typeof value === "number" && value >= 1 && value <= 100 ? value : null
 }
 
-function buildSubjectResults(source: ReportSourceData) {
+function buildSubjectResults(source: ReportSourceData, student: Student) {
   const assignedIds = new Set(source.assignedSubjectIds)
   return source.subjects
-    .filter((subject) => subject.is_active && assignedIds.has(subject.id))
+    .filter(
+      (subject) =>
+        subject.is_active &&
+        assignedIds.has(subject.id) &&
+        subjectMatchesStudentReligion(subject, student.religion),
+    )
     .map<ReportSubjectResult>((subject) => {
       const kkm = resolveSubjectKkm(subject.id, source)
       const components = source.assessmentComponents
@@ -291,7 +299,7 @@ export function buildReportViewModel(
       academicYear: academicYear.name,
       semester: `Semester ${semester.number}`,
     },
-    subjects: buildSubjectResults(source),
+    subjects: buildSubjectResults(source, student),
     attendance: {
       sickDays: source.attendance?.sick_days ?? null,
       permittedDays: source.attendance?.permitted_days ?? null,

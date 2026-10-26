@@ -1321,6 +1321,7 @@ for (const viewport of settingsViewports) {
       .click()
     await expect(page.getByRole("dialog")).toBeVisible()
     await expect(page.getByLabel(/Nama Mata Pelajaran/)).toBeVisible()
+    await expect(page.getByLabel(/Kelompok Agama Siswa/)).toBeVisible()
     await expect(
       page.getByLabel(/Ini mata pelajaran muatan lokal/),
     ).toBeVisible()

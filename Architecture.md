@@ -551,6 +551,7 @@ Master mata pelajaran disimpan sebagai konfigurasi sekolah, bukan daftar tetap d
 id
 name
 code (nullable)
+religion_scope (nullable)
 is_local_content
 display_order
 is_active
@@ -558,7 +559,9 @@ created_by / updated_by
 created_at / updated_at
 ```
 
-Nama wajib unik tanpa membedakan huruf besar-kecil. Kode bersifat opsional dan, jika diisi, juga unik tanpa membedakan huruf besar-kecil. `is_local_content` membedakan muatan lokal tanpa membuat tabel atau workflow terpisah, sedangkan `display_order` mengatur urutan tampilan rapor tanpa bergantung pada nama mapel.
+Nama wajib unik tanpa membedakan huruf besar-kecil. Kode bersifat opsional dan, jika diisi, juga unik tanpa membedakan huruf besar-kecil. `religion_scope` bersifat opsional: `null` berlaku untuk seluruh siswa, sedangkan nilai agama membatasi mapel kepada siswa dengan agama yang cocok. `is_local_content` membedakan muatan lokal tanpa membuat tabel atau workflow terpisah, sedangkan `display_order` mengatur urutan tampilan rapor tanpa bergantung pada nama mapel.
+
+Pengelompokan mapel agama diturunkan dari `students.religion`; tidak ada daftar anggota mapel manual. Filter yang sama digunakan pada Input Nilai, pemeriksaan kelengkapan, report view model, dan leger. Trigger database menolak nilai atau deskripsi mapel agama untuk siswa yang agamanya tidak cocok.
 
 Pada tahap ini Admin aktif dapat mengelola master mata pelajaran. Pengguna aktif yang sudah login dapat membaca mapel aktif sebagai persiapan workflow penugasan. Hubungan mapel ke kelas dan guru tetap dipisahkan ke `teacher_assignments` pada tahap berikutnya.
 

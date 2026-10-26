@@ -21,6 +21,7 @@ const subject = {
   id: "subject-1",
   name: "Bahasa Daerah",
   code: "MULOK-01",
+  religion_scope: null,
   is_local_content: true,
   display_order: 8,
   is_active: true,
@@ -69,6 +70,7 @@ describe("SubjectPage", () => {
     expect(screen.getByLabelText(/Nama Mata Pelajaran/)).toBeVisible()
     expect(screen.getByLabelText(/Kode/)).toBeVisible()
     expect(screen.getByLabelText(/Urutan Tampil/)).toBeVisible()
+    expect(screen.getByLabelText(/Kelompok Agama Siswa/)).toBeVisible()
     expect(
       screen.getByLabelText(/Ini mata pelajaran muatan lokal/),
     ).toBeVisible()
@@ -102,6 +104,7 @@ describe("SubjectPage", () => {
       expect(subjectMocks.createSubject).toHaveBeenCalledWith("admin-1", {
         name: "Bahasa Daerah",
         code: "MULOK-01",
+        religionScope: null,
         isLocalContent: true,
         displayOrder: 8,
       })

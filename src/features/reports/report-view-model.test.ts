@@ -70,6 +70,7 @@ function createSource(): ReportSourceData {
         id: "subject-1",
         name: "Matematika",
         code: null,
+        religion_scope: null,
         is_local_content: false,
         display_order: 1,
         is_active: true,
@@ -213,6 +214,37 @@ describe("buildReportViewModel", () => {
     expect(report.templateGroup).toBe("upper_primary")
     expect(report.subjects[0]?.kkm).toBe(75)
     expect(report.subjects[0]?.components[0]?.predicate).toBe("B")
+  })
+
+  it("hanya memasukkan mapel agama yang sesuai dengan agama siswa", () => {
+    const source = createSource()
+    const report = buildReportViewModel({
+      schoolClass,
+      student: { ...student, religion: "Kristen Protestan" },
+      academicYear,
+      semester,
+      source: {
+        ...source,
+        assignedSubjectIds: ["subject-1", "subject-2"],
+        subjects: [
+          {
+            ...source.subjects[0]!,
+            name: "Agama Islam",
+            religion_scope: "islam",
+          },
+          {
+            ...source.subjects[0]!,
+            id: "subject-2",
+            name: "Agama Kristen",
+            religion_scope: "christian",
+          },
+        ],
+      },
+    })
+
+    expect(report.subjects.map((item) => item.subjectName)).toEqual([
+      "Agama Kristen",
+    ])
   })
 
   it("menandai field opsional kosong tanpa mengarang isinya", () => {

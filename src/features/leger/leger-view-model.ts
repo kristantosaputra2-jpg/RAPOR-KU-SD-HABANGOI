@@ -77,14 +77,21 @@ function buildLegerViewModel(
     )
   }
 
-  const subjectColumns = firstReport.subjects.map((subject) => ({
-    subjectId: subject.subjectId,
-    subjectName: subject.subjectName,
-    components: subject.components.map((component) => ({
-      componentId: component.componentId,
-      componentName: component.componentName,
-    })),
-  }))
+  const subjectColumns = Array.from(
+    new Map(
+      reports.flatMap((report) =>
+        report.subjects.map((subject) => [subject.subjectId, subject] as const),
+      ),
+    ).values(),
+    (subject) => ({
+      subjectId: subject.subjectId,
+      subjectName: subject.subjectName,
+      components: subject.components.map((component) => ({
+        componentId: component.componentId,
+        componentName: component.componentName,
+      })),
+    }),
+  )
   const completenessByStudent = new Map(
     completeness.map((item) => [item.studentId, item]),
   )

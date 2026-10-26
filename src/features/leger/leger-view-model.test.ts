@@ -171,6 +171,40 @@ describe("buildLowerPrimaryLegerViewModel", () => {
     ).toThrow(LowerPrimaryLegerError)
   })
 
+  it("menggabungkan kolom mapel agama dari seluruh siswa", () => {
+    const islamReport = report("student-1", "Ayu")
+    const christianReport = report("student-2", "Beni")
+    const replaceReligionSubject = (
+      source: ReportViewModel,
+      subjectId: string,
+      subjectName: string,
+    ): ReportViewModel => ({
+      ...source,
+      subjects: [
+        source.subjects[0]!,
+        { ...source.subjects[1]!, subjectId, subjectName },
+      ],
+    })
+
+    const leger = buildLowerPrimaryLegerViewModel(
+      [
+        replaceReligionSubject(islamReport, "religion-islam", "Agama Islam"),
+        replaceReligionSubject(
+          christianReport,
+          "religion-christian",
+          "Agama Kristen",
+        ),
+      ],
+      [],
+    )
+
+    expect(leger.subjectColumns.map((item) => item.subjectName)).toEqual([
+      "Matematika",
+      "Agama Islam",
+      "Agama Kristen",
+    ])
+  })
+
   it("menyusun nilai akhir, predikat, dan deskripsi kelas 4–6 per komponen", () => {
     const leger = buildUpperPrimaryLegerViewModel(
       [report("student-1", "Ayu", "upper_primary")],
