@@ -93,6 +93,7 @@ Keterangan: `R` membaca, `C` menambah, `U` mengubah, `D` menghapus, dan `—` ti
 | `class_members`                         | R/C/U/D            | R (kelas sendiri)             | R (kelas ditugaskan)                                      | —         |
 | `student_biodata`                       | R/C/U              | R/C/U (kelas sendiri)         | —                                                         | —         |
 | `subjects`                              | R/C/U              | R (mapel aktif)               | R (mapel ditugaskan dan aktif)                            | —         |
+| `student_religion_subject_overrides`    | R/C/U/D            | R/C/U/D (kelas sendiri)       | R (kelas/mapel ditugaskan)                                | —         |
 | `teacher_assignments`                   | R/C/U              | R (milik akun yang terhubung) | R (milik akun yang terhubung)                             | —         |
 | `learning_outcomes`                     | R/C/U              | R (CP aktif sesuai kelas)     | R/C/U (scope penugasan; hanya CP aktif yang dapat dibaca) | —         |
 | `assessment_components`                 | R/C/U              | R (komponen aktif)            | R (komponen aktif)                                        | —         |
@@ -109,7 +110,7 @@ Keterangan: `R` membaca, `C` menambah, `U` mengubah, `D` menghapus, dan `—` ti
 
 Matriks ini mencatat policy efektif dari migration saat ini. Hak produk yang belum memiliki policy tidak boleh dianggap sudah aman hanya karena menunya tersedia.
 
-Untuk mapel dengan `subjects.religion_scope`, izin kelas dan penugasan tetap berlaku seperti tabel di atas, lalu validasi database membatasi penyimpanan nilai dan deskripsi hanya kepada siswa dengan agama yang cocok. Mapel dengan nilai `null` tetap berlaku bagi seluruh siswa.
+Untuk mapel dengan `subjects.religion_scope`, izin kelas dan penugasan tetap berlaku seperti tabel di atas. Admin atau Wali Kelas dapat memilih satu mapel agama pengganti per siswa dan semester; Guru Mata Pelajaran hanya dapat membacanya. Validasi database membatasi nilai dan deskripsi ke mapel agama efektif tersebut, atau ke agama biodata jika tidak ada pengganti. Mapel dengan nilai `null` tetap berlaku bagi seluruh siswa.
 
 ### Catatan Implementasi yang Perlu Diaudit
 

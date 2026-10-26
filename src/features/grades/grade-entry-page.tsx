@@ -45,9 +45,15 @@ import {
   getStudents,
 } from "@/features/students/student.service"
 import {
+  getReligionScopeLabel,
   getSubjects,
+  normalizeReligion,
   subjectMatchesStudentReligion,
 } from "@/features/subjects/subject.service"
+import {
+  getStudentReligionSubjectOverrides,
+  setStudentReligionSubjectOverride,
+} from "@/features/subjects/student-religion-subject.service"
 import { getTeacherByUserId } from "@/features/teachers/teacher.service"
 import { getGradeClassOptions, getGradeSubjectOptions } from "./grade-access"
 
@@ -68,6 +74,7 @@ async function loadReferences(userId: string) {
     outcomes,
     students,
     memberships,
+    religionSubjectOverrides,
     components,
     currentTeacher,
   ] = await Promise.all([
@@ -77,6 +84,7 @@ async function loadReferences(userId: string) {
     getLearningOutcomes(),
     getStudents(),
     getClassMemberships(),
+    getStudentReligionSubjectOverrides(),
     getAssessmentComponents(),
     getTeacherByUserId(userId),
   ])
@@ -87,6 +95,7 @@ async function loadReferences(userId: string) {
     outcomes,
     students,
     memberships,
+    religionSubjectOverrides,
     components,
     currentTeacher,
   }
@@ -131,6 +140,9 @@ export function GradeEntryPage({
   const [finalDraft, setFinalDraft] = useState("")
   const [strongestOutcomeId, setStrongestOutcomeId] = useState("")
   const [weakestOutcomeId, setWeakestOutcomeId] = useState<string | null>(null)
+  const [savingReligionStudentId, setSavingReligionStudentId] = useState<
+    string | null
+  >(null)
 
   useEffect(() => {
     let mounted = true
@@ -200,7 +212,7 @@ export function GradeEntryPage({
         item.grade_level === selectedClass.grade_level,
     )
   }, [references, selectedClass, subjectId])
-  const students = useMemo(() => {
+  const classStudents = useMemo(() => {
     if (!references || !selectedClass) return []
     const ids = new Set(
       references.memberships
@@ -212,13 +224,27 @@ export function GradeEntryPage({
         .map((item) => item.student_id),
     )
     return references.students.filter(
-      (item) =>
-        item.is_active &&
-        ids.has(item.id) &&
-        (!selectedSubject ||
-          subjectMatchesStudentReligion(selectedSubject, item.religion)),
+      (item) => item.is_active && ids.has(item.id),
     )
-  }, [references, selectedClass, selectedSubject])
+  }, [references, selectedClass])
+  const students = useMemo(() => {
+    if (!references || !selectedSubject || !selectedClass) return classStudents
+    const overrideByStudent = new Map(
+      references.religionSubjectOverrides
+        .filter((item) => item.semester_id === selectedClass.semester_id)
+        .map((item) => [item.student_id, item.subject_id]),
+    )
+    return classStudents.filter((student) =>
+      subjectMatchesStudentReligion(
+        selectedSubject,
+        student.religion,
+        overrideByStudent.get(student.id) ?? null,
+      ),
+    )
+  }, [classStudents, references, selectedClass, selectedSubject])
+  const religionSubjects = subjectOptions.filter(
+    (subject) => subject.religion_scope !== null,
+  )
 
   useEffect(() => {
     if (!selectedClass || !subjectId) return
@@ -258,6 +284,58 @@ export function GradeEntryPage({
       mounted = false
     }
   }, [selectedClass, subjectId])
+
+  async function changeReligionSubject(
+    studentId: string,
+    nextSubjectId: string,
+  ) {
+    if (!references || !selectedClass) return
+    const existing =
+      references.religionSubjectOverrides.find(
+        (item) =>
+          item.student_id === studentId &&
+          item.semester_id === selectedClass.semester_id,
+      ) ?? null
+    setSavingReligionStudentId(studentId)
+    setError("")
+    setMessage("")
+
+    try {
+      const saved = await setStudentReligionSubjectOverride(userId, {
+        studentId,
+        classId: selectedClass.id,
+        semesterId: selectedClass.semester_id,
+        subjectId: nextSubjectId || null,
+        existing,
+      })
+      setReferences((current) =>
+        current
+          ? {
+              ...current,
+              religionSubjectOverrides: [
+                ...current.religionSubjectOverrides.filter(
+                  (item) => item.id !== existing?.id,
+                ),
+                ...(saved ? [saved] : []),
+              ],
+            }
+          : current,
+      )
+      setMessage(
+        nextSubjectId
+          ? "Mapel agama siswa berhasil diganti. CP dan deskripsi mengikuti mapel pilihan."
+          : "Mapel agama siswa kembali mengikuti agama pada biodata.",
+      )
+    } catch (cause) {
+      setError(
+        cause instanceof Error
+          ? cause.message
+          : "Pengaturan mapel agama belum tersimpan.",
+      )
+    } finally {
+      setSavingReligionStudentId(null)
+    }
+  }
 
   function summary(studentId: string) {
     const domain = configuration ? toDomainConfiguration(configuration) : null
@@ -566,6 +644,73 @@ export function GradeEntryPage({
         ) : null}
         {selectedClass && subjectId ? (
           <>
+            {selectedSubject?.religion_scope &&
+            userRole !== "subject_teacher" ? (
+              <section className="mt-5 rounded-3xl border border-[var(--rapotku-border)] bg-white p-4 sm:p-6">
+                <details>
+                  <summary className="cursor-pointer text-lg font-bold">
+                    Atur siswa mapel agama
+                  </summary>
+                  <p className="mt-2 text-sm text-[var(--rapotku-muted)]">
+                    Otomatis mengikuti agama pada biodata. Penggantian manual
+                    tidak mengubah biodata dan harus dilakukan sebelum nilai
+                    atau deskripsi agama diisi.
+                  </p>
+                  <div className="mt-4 grid gap-3">
+                    {classStudents.map((student) => {
+                      const existing =
+                        references?.religionSubjectOverrides.find(
+                          (item) =>
+                            item.student_id === student.id &&
+                            item.semester_id === selectedClass.semester_id,
+                        )
+                      const automaticScope = normalizeReligion(student.religion)
+                      const automaticSubject = religionSubjects.find(
+                        (subject) => subject.religion_scope === automaticScope,
+                      )
+                      return (
+                        <label
+                          className="grid gap-2 rounded-2xl border border-[var(--rapotku-border)] p-3 sm:grid-cols-[minmax(0,1fr)_minmax(220px,320px)] sm:items-center"
+                          key={student.id}
+                        >
+                          <span className="min-w-0">
+                            <strong className="block truncate">
+                              {student.full_name}
+                            </strong>
+                            <span className="text-xs text-[var(--rapotku-muted)]">
+                              Biodata: {student.religion ?? "Belum diisi"}
+                            </span>
+                          </span>
+                          <select
+                            aria-label={`Mapel agama ${student.full_name}`}
+                            className="min-h-12 w-full rounded-xl border border-[var(--rapotku-border)] bg-white px-3 text-sm focus:border-[var(--rapotku-brand)] focus:outline-none"
+                            value={existing?.subject_id ?? ""}
+                            disabled={savingReligionStudentId === student.id}
+                            onChange={(event) =>
+                              void changeReligionSubject(
+                                student.id,
+                                event.target.value,
+                              )
+                            }
+                          >
+                            <option value="">
+                              Otomatis —{" "}
+                              {automaticSubject?.name ??
+                                getReligionScopeLabel(automaticScope)}
+                            </option>
+                            {religionSubjects.map((subject) => (
+                              <option key={subject.id} value={subject.id}>
+                                Manual — {subject.name}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                      )
+                    })}
+                  </div>
+                </details>
+              </section>
+            ) : null}
             <section className="mt-5 rounded-3xl border border-[var(--rapotku-border)] bg-white p-4 sm:p-6">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                 <div>

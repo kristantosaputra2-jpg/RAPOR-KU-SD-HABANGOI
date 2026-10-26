@@ -561,7 +561,7 @@ created_at / updated_at
 
 Nama wajib unik tanpa membedakan huruf besar-kecil. Kode bersifat opsional dan, jika diisi, juga unik tanpa membedakan huruf besar-kecil. `religion_scope` bersifat opsional: `null` berlaku untuk seluruh siswa, sedangkan nilai agama membatasi mapel kepada siswa dengan agama yang cocok. `is_local_content` membedakan muatan lokal tanpa membuat tabel atau workflow terpisah, sedangkan `display_order` mengatur urutan tampilan rapor tanpa bergantung pada nama mapel.
 
-Pengelompokan mapel agama diturunkan dari `students.religion`; tidak ada daftar anggota mapel manual. Filter yang sama digunakan pada Input Nilai, pemeriksaan kelengkapan, report view model, dan leger. Trigger database menolak nilai atau deskripsi mapel agama untuk siswa yang agamanya tidak cocok.
+Pengelompokan mapel agama secara default diturunkan dari `students.religion`. Admin atau Wali Kelas dapat menyimpan satu pengganti manual per siswa dan semester pada `student_religion_subject_overrides` tanpa mengubah biodata agama. Guru Mata Pelajaran dapat membaca pilihan tersebut agar daftar siswa pada mapel penugasannya tepat, tetapi tidak dapat mengubahnya. Filter yang sama digunakan pada Input Nilai, pemeriksaan kelengkapan, report view model, dan leger. Trigger database memastikan hanya mapel agama efektif siswa yang dapat menerima nilai atau deskripsi. Pengganti harus ditetapkan sebelum nilai atau deskripsi mapel agama yang bertentangan tersimpan agar data lama tidak tersembunyi.
 
 Pada tahap ini Admin aktif dapat mengelola master mata pelajaran. Pengguna aktif yang sudah login dapat membaca mapel aktif sebagai persiapan workflow penugasan. Hubungan mapel ke kelas dan guru tetap dipisahkan ke `teacher_assignments` pada tahap berikutnya.
 

@@ -77,13 +77,13 @@ export function normalizeReligion(
 }
 
 export function subjectMatchesStudentReligion(
-  subject: Pick<Subject, "religion_scope">,
+  subject: Pick<Subject, "id" | "religion_scope">,
   religion: string | null | undefined,
+  overrideSubjectId: string | null = null,
 ) {
-  return (
-    subject.religion_scope === null ||
-    subject.religion_scope === normalizeReligion(religion)
-  )
+  if (subject.religion_scope === null) return true
+  if (overrideSubjectId) return subject.id === overrideSubjectId
+  return subject.religion_scope === normalizeReligion(religion)
 }
 
 export function getReligionScopeLabel(scope: string | null) {

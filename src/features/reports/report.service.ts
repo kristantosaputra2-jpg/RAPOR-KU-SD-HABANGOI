@@ -37,6 +37,7 @@ async function getReportSources(
     achievementResult,
     noteResult,
     biodataResult,
+    religionOverrideResult,
     classResult,
   ] = await Promise.all([
     client
@@ -131,6 +132,12 @@ async function getReportSources(
       )
       .in("student_id", studentIds),
     client
+      .from("student_religion_subject_overrides")
+      .select("student_id,subject_id")
+      .in("student_id", studentIds)
+      .eq("class_id", classId)
+      .eq("semester_id", semesterId),
+    client
       .from("classes")
       .select("homeroom_teacher_id")
       .eq("id", classId)
@@ -152,6 +159,7 @@ async function getReportSources(
     achievementResult,
     noteResult,
     biodataResult,
+    religionOverrideResult,
     classResult,
   ]
   if (results.some((result) => result.error)) {
@@ -226,6 +234,10 @@ async function getReportSources(
           studentBiodata,
           studentPhotoUrl: photoUrls.get(studentId) ?? null,
           homeroomTeacher: homeroomTeacherResult.data,
+          religionSubjectOverrideId:
+            (religionOverrideResult.data ?? []).find(
+              (item) => item.student_id === studentId,
+            )?.subject_id ?? null,
         },
       ]
     }),

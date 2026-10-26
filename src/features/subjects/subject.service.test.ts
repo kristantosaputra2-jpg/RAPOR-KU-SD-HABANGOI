@@ -51,14 +51,37 @@ describe("subject service", () => {
     expect(normalizeReligion("Khonghucu")).toBe("confucian")
     expect(normalizeReligion("Penghayat Kepercayaan")).toBe("belief")
     expect(
-      subjectMatchesStudentReligion({ religion_scope: "catholic" }, "Katolik"),
+      subjectMatchesStudentReligion(
+        { id: "catholic", religion_scope: "catholic" },
+        "Katolik",
+      ),
     ).toBe(true)
     expect(
-      subjectMatchesStudentReligion({ religion_scope: "islam" }, "Hindu"),
+      subjectMatchesStudentReligion(
+        { id: "islam", religion_scope: "islam" },
+        "Hindu",
+      ),
     ).toBe(false)
     expect(
-      subjectMatchesStudentReligion({ religion_scope: null }, "Hindu"),
+      subjectMatchesStudentReligion(
+        { id: "general", religion_scope: null },
+        "Hindu",
+      ),
     ).toBe(true)
+    expect(
+      subjectMatchesStudentReligion(
+        { id: "christian", religion_scope: "christian" },
+        "Katolik",
+        "christian",
+      ),
+    ).toBe(true)
+    expect(
+      subjectMatchesStudentReligion(
+        { id: "catholic", religion_scope: "catholic" },
+        "Katolik",
+        "christian",
+      ),
+    ).toBe(false)
   })
 
   it("menolak urutan di luar batas", () => {

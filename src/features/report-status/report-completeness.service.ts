@@ -62,6 +62,7 @@ export async function getReportCompleteness(
     achievementResult,
     noteResult,
     confirmationResult,
+    religionOverrideResult,
   ] = await Promise.all([
     client
       .from("schools")
@@ -121,6 +122,11 @@ export async function getReportCompleteness(
       )
       .eq("class_id", classId)
       .eq("semester_id", semesterId),
+    client
+      .from("student_religion_subject_overrides")
+      .select("student_id,subject_id")
+      .eq("class_id", classId)
+      .eq("semester_id", semesterId),
   ])
 
   const results = [
@@ -136,6 +142,7 @@ export async function getReportCompleteness(
     achievementResult,
     noteResult,
     confirmationResult,
+    religionOverrideResult,
   ]
   if (results.some((result) => result.error)) {
     throw new ReportCompletenessError(
@@ -185,6 +192,12 @@ export async function getReportCompleteness(
   const schoolIdentityComplete = isSchoolIdentityComplete(
     schoolResult.data ?? null,
   )
+  const religionOverrideByStudent = new Map(
+    (religionOverrideResult.data ?? []).map((item) => [
+      item.student_id,
+      item.subject_id,
+    ]),
+  )
 
   return students.map((student) => {
     const applicableSubjectIds = subjectIds.filter((subjectId) => {
@@ -192,7 +205,12 @@ export async function getReportCompleteness(
         (item) => item.id === subjectId,
       )
       return (
-        !subject || subjectMatchesStudentReligion(subject, student.religion)
+        !subject ||
+        subjectMatchesStudentReligion(
+          subject,
+          student.religion,
+          religionOverrideByStudent.get(student.id) ?? null,
+        )
       )
     })
     const confirmation = confirmationByStudent.get(student.id)

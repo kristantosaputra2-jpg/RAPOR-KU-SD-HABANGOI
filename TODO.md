@@ -243,6 +243,8 @@ Fungsinya:
 - [x] Mata pelajaran configurable
 - [x] Kelompokkan siswa otomatis pada mapel agama berdasarkan agama di biodata
   - Admin memilih Islam, Kristen, Katolik, Hindu, Buddha, Konghucu, atau Kepercayaan pada mapel. Mapel umum tetap berlaku untuk semua siswa; input nilai, kelengkapan, rapor, dan leger hanya memakai mapel agama yang sesuai.
+- [x] Tambahkan penggantian mapel agama manual per siswa dan semester
+  - Admin atau Wali Kelas dapat mengganti hasil kelompok otomatis tanpa mengubah agama pada biodata. Siswa tetap mengikuti tepat satu mapel agama; CP, nilai, dan deskripsi mengikuti mapel pengganti.
 - [x] Tambah muatan lokal
 - [x] Assign mata pelajaran ke kelas
 - [x] Assign guru ke mapel
@@ -654,23 +656,23 @@ Task di bawah ini tidak boleh dikerjakan sebelum MVP selesai kecuali ada perubah
 
 # 📊 Progress Tracker
 
-| Area                | Status      | Progress | Catatan                                                                                                                     |
-| ------------------- | ----------- | -------: | --------------------------------------------------------------------------------------------------------------------------- |
-| Discovery           | Done        |     100% | Referensi kelas 1 & 4 sudah dibedah                                                                                         |
-| PRD                 | Done        |     100% | PRD gabungan kelas 1–6 tersedia                                                                                             |
-| AGENTS              | Done        |     100% | Instruksi developer/AI tersedia                                                                                             |
-| Architecture        | Done        |     100% | Arsitektur awal tersedia                                                                                                    |
-| Database Design     | In Progress |      75% | Struktur 25 tabel, relasi, integritas, RLS, function, dan Storage saat ini sudah terdokumentasi; konsolidasi aturan KKM masih perlu diaudit |
-| Permissions         | In Progress |      90% | Role ganda dan akses seluruh mapel Wali Kelas sudah diterapkan; uji login role serta audit menyeluruh RLS produksi masih tersisa |
-| Frontend Foundation | Done        |     100% | Scaffold, quality tools, repository GitHub, dan fondasi Playwright siap                                                     |
-| Supabase            | In Progress |      99% | Auth, seluruh master data, penugasan guru, master CP, audit, explicit grants, dan RLS terkait sudah tersedia                |
-| Master Data         | Done        |     100% | Identitas sekolah, periode akademik, guru, kelas, siswa, mata pelajaran, penugasan, dan master CP selesai                   |
-| Grade Engine        | In Progress |      95% | Input seluruh CP kelas 1–6 tersedia; Admin mengakses semua data, Wali Kelas semua mapel kelas sendiri, dan Guru Mapel hanya penugasannya |
-| Report Engine       | Done        |     100% | Template resmi A4 disetujui; Chrome desktop, simulasi Android, browser print, dan Save as PDF telah diverifikasi           |
-| Leger               | Done        |     100% | Leger kelas 1–6 responsif; cetak A4 landscape dan ekspor CSV tersedia untuk kedua kelompok kelas                            |
-| Testing             | In Progress |      92% | 240 unit/integration test lulus; policy produksi, Chrome desktop, simulasi Android, cetak A4, dan build telah diverifikasi; smoke test login Wali Kelas tersisa |
-| Cloudflare          | Done        |     100% | Pages gratis aktif, terhubung ke GitHub `main`, dan memakai konfigurasi Supabase produksi                                  |
-| Production          | In Progress |      20% | Deployment awal aktif; audit RLS, periode akademik, preview rapor, cetak, dan backup masih harus diverifikasi             |
+| Area                | Status      | Progress | Catatan                                                                                                                                                         |
+| ------------------- | ----------- | -------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Discovery           | Done        |     100% | Referensi kelas 1 & 4 sudah dibedah                                                                                                                             |
+| PRD                 | Done        |     100% | PRD gabungan kelas 1–6 tersedia                                                                                                                                 |
+| AGENTS              | Done        |     100% | Instruksi developer/AI tersedia                                                                                                                                 |
+| Architecture        | Done        |     100% | Arsitektur awal tersedia                                                                                                                                        |
+| Database Design     | In Progress |      75% | Struktur 25 tabel, relasi, integritas, RLS, function, dan Storage saat ini sudah terdokumentasi; konsolidasi aturan KKM masih perlu diaudit                     |
+| Permissions         | In Progress |      90% | Role ganda dan akses seluruh mapel Wali Kelas sudah diterapkan; uji login role serta audit menyeluruh RLS produksi masih tersisa                                |
+| Frontend Foundation | Done        |     100% | Scaffold, quality tools, repository GitHub, dan fondasi Playwright siap                                                                                         |
+| Supabase            | In Progress |      99% | Auth, seluruh master data, penugasan guru, master CP, audit, explicit grants, dan RLS terkait sudah tersedia                                                    |
+| Master Data         | Done        |     100% | Identitas sekolah, periode akademik, guru, kelas, siswa, mata pelajaran, penugasan, dan master CP selesai                                                       |
+| Grade Engine        | In Progress |      95% | Input seluruh CP kelas 1–6 tersedia; Admin mengakses semua data, Wali Kelas semua mapel kelas sendiri, dan Guru Mapel hanya penugasannya                        |
+| Report Engine       | Done        |     100% | Template resmi A4 disetujui; Chrome desktop, simulasi Android, browser print, dan Save as PDF telah diverifikasi                                                |
+| Leger               | Done        |     100% | Leger kelas 1–6 responsif; cetak A4 landscape dan ekspor CSV tersedia untuk kedua kelompok kelas                                                                |
+| Testing             | In Progress |      92% | 245 unit/integration test lulus; policy produksi, Chrome desktop, simulasi Android, cetak A4, dan build telah diverifikasi; smoke test login Wali Kelas tersisa |
+| Cloudflare          | Done        |     100% | Pages gratis aktif, terhubung ke GitHub `main`, dan memakai konfigurasi Supabase produksi                                                                       |
+| Production          | In Progress |      20% | Deployment awal aktif; audit RLS, periode akademik, preview rapor, cetak, dan backup masih harus diverifikasi                                                   |
 
 ---
 
@@ -717,6 +719,9 @@ Task di bawah ini tidak boleh dikerjakan sebelum MVP selesai kecuali ada perubah
 - [x] Selaraskan kelengkapan rapor, preview/cetak, dan leger agar setiap siswa hanya menerima mapel agama yang sesuai; kolom leger menggabungkan mapel agama berbeda dalam satu kelas.
 - [x] Terapkan migration `20261026013355_add_subject_religion_scope.sql` dan validasi database agar nilai/deskripsi mapel agama tidak dapat disimpan untuk agama siswa yang tidak cocok.
 - [x] Verifikasi 240 unit/integration test, 4 responsive E2E Mata Pelajaran pada 360/390/768/1280px, lint, format, TypeScript build, production build, Supabase dry-run, database lint, migration history, kolom produksi, dan normalisasi variasi nama agama.
+- [x] Tambahkan penggantian mapel agama manual per siswa/semester untuk Admin dan Wali Kelas tanpa mengubah biodata agama; Guru Mapel hanya membaca hasil pengelompokan.
+- [x] Terapkan migration `20261026020902_add_student_religion_subject_overrides.sql` dengan RLS dan validasi agar perubahan tidak menyembunyikan nilai/deskripsi lama.
+- [x] Verifikasi 245 unit/integration test, E2E penggantian agama pada viewport 390px, lint, format, TypeScript, production build, database lint, dan kesamaan migration lokal-produksi.
 
 ## 2026-10-25
 

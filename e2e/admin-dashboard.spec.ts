@@ -159,6 +159,12 @@ async function openAuthenticatedDashboard(
         : [],
     })
   })
+  await page.route(
+    "**/rest/v1/student_religion_subject_overrides*",
+    async (route) => {
+      await route.fulfill({ status: 200, json: [] })
+    },
+  )
   await page.route("**/rest/v1/subjects*", async (route) => {
     const subjectNames =
       gradeLevel >= 4
@@ -178,6 +184,7 @@ async function openAuthenticatedDashboard(
             id: `subject-${index + 1}`,
             name,
             code: `MPL-${index + 1}`,
+            religion_scope: null,
             is_local_content: false,
             display_order: index + 1,
             is_active: true,
@@ -1412,6 +1419,146 @@ for (const viewport of settingsViewports) {
     expect(layout.scrollWidth).toBe(layout.clientWidth)
   })
 }
+
+test("Admin mengganti mapel agama siswa tanpa mengubah biodata", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await openAuthenticatedDashboard(page, true, true)
+
+  await page.route("**/rest/v1/students*", async (route) => {
+    await route.fulfill({
+      status: 200,
+      json: [
+        {
+          id: "student-1",
+          full_name: "Ani",
+          nis: "1001",
+          nisn: null,
+          gender: "female",
+          birth_place: null,
+          birth_date: null,
+          religion: "Katolik",
+          address: null,
+          father_name: null,
+          mother_name: null,
+          guardian_name: null,
+          is_active: true,
+          created_at: "2026-09-02T00:00:00.000Z",
+          updated_at: "2026-09-02T00:00:00.000Z",
+        },
+      ],
+    })
+  })
+  await page.route("**/rest/v1/subjects*", async (route) => {
+    await route.fulfill({
+      status: 200,
+      json: [
+        {
+          id: "subject-1",
+          name: "Pendidikan Agama Katolik",
+          code: "PAKAT",
+          religion_scope: "catholic",
+          is_local_content: false,
+          display_order: 1,
+          is_active: true,
+          created_at: "2026-09-02T00:00:00.000Z",
+          updated_at: "2026-09-02T00:00:00.000Z",
+        },
+        {
+          id: "subject-2",
+          name: "Pendidikan Agama Kristen Protestan",
+          code: "PAKRIS",
+          religion_scope: "christian",
+          is_local_content: false,
+          display_order: 2,
+          is_active: true,
+          created_at: "2026-09-02T00:00:00.000Z",
+          updated_at: "2026-09-02T00:00:00.000Z",
+        },
+      ],
+    })
+  })
+  await page.route("**/rest/v1/teacher_assignments*", async (route) => {
+    await route.fulfill({
+      status: 200,
+      json: ["subject-1", "subject-2"].map((subjectId, index) => ({
+        id: `assignment-${index + 1}`,
+        teacher_id: "teacher-1",
+        class_id: "class-1",
+        subject_id: subjectId,
+        academic_year_id: "year-1",
+        semester_id: "semester-1",
+        is_active: true,
+        created_at: "2026-09-02T00:00:00.000Z",
+        updated_at: "2026-09-02T00:00:00.000Z",
+      })),
+    })
+  })
+  await page.route("**/rest/v1/learning_outcomes*", async (route) => {
+    await route.fulfill({
+      status: 200,
+      json: [
+        {
+          id: "outcome-catholic",
+          subject_id: "subject-1",
+          grade_level: 2,
+          semester_id: "semester-1",
+          code: "CP-KAT",
+          title: "CP Katolik",
+          description: "CP Pendidikan Agama Katolik.",
+          is_active: true,
+          created_at: "2026-09-02T00:00:00.000Z",
+          updated_at: "2026-09-02T00:00:00.000Z",
+        },
+        {
+          id: "outcome-christian",
+          subject_id: "subject-2",
+          grade_level: 2,
+          semester_id: "semester-1",
+          code: "CP-PRO",
+          title: "CP Protestan",
+          description: "CP Pendidikan Agama Kristen Protestan.",
+          is_active: true,
+          created_at: "2026-09-02T00:00:00.000Z",
+          updated_at: "2026-09-02T00:00:00.000Z",
+        },
+      ],
+    })
+  })
+  await page.route(
+    "**/rest/v1/student_religion_subject_overrides*",
+    async (route) => {
+      if (route.request().method() === "POST") {
+        const body = route.request().postDataJSON()
+        await route.fulfill({
+          status: 201,
+          json: {
+            id: "override-1",
+            ...body,
+            created_at: "2026-10-26T00:00:00.000Z",
+            updated_at: "2026-10-26T00:00:00.000Z",
+          },
+        })
+        return
+      }
+      await route.fulfill({ status: 200, json: [] })
+    },
+  )
+
+  await openGrades(page, 390)
+  await page.getByText("Atur siswa mapel agama").click()
+  await expect(page.getByText("Biodata: Katolik")).toBeVisible()
+  await page.getByLabel("Mapel agama Ani").selectOption("subject-2")
+  await expect(
+    page.getByText(/CP dan deskripsi mengikuti mapel pilihan/),
+  ).toBeVisible()
+
+  await page.getByLabel("Mata pelajaran").selectOption("subject-2")
+  await expect(
+    page.locator('input[aria-label="Pengetahuan CP Protestan Ani"]:visible'),
+  ).toBeVisible()
+})
 
 for (const gradeLevel of [4, 5, 6]) {
   test(`Input Nilai kelas ${gradeLevel} memuat seluruh siswa dan dua komponen`, async ({

@@ -362,6 +362,8 @@ Validasi:
 
 Daftar mapel harus configurable.
 
+Mapel agama secara default mengikuti agama pada biodata siswa. Admin atau Wali Kelas dapat memilih satu mapel agama pengganti untuk seorang siswa pada semester tertentu tanpa mengubah biodata agamanya. CP, nilai, deskripsi, kelengkapan, leger, dan rapor siswa harus mengikuti mapel agama yang dipilih tersebut.
+
 Contoh kandidat:
 
 - Pendidikan Agama

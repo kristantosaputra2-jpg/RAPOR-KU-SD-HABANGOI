@@ -154,6 +154,7 @@ function createSource(): ReportSourceData {
     studentBiodata: null,
     studentPhotoUrl: null,
     homeroomTeacher: null,
+    religionSubjectOverrideId: null,
   }
 }
 
@@ -245,6 +246,51 @@ describe("buildReportViewModel", () => {
     expect(report.subjects.map((item) => item.subjectName)).toEqual([
       "Agama Kristen",
     ])
+  })
+
+  it("memakai mapel agama pengganti manual beserta CP dan deskripsinya", () => {
+    const source = createSource()
+    const report = buildReportViewModel({
+      schoolClass,
+      student: { ...student, religion: "Katolik" },
+      academicYear,
+      semester,
+      source: {
+        ...source,
+        religionSubjectOverrideId: "subject-2",
+        assignedSubjectIds: ["subject-1", "subject-2"],
+        gradeEntries: source.gradeEntries.map((entry) => ({
+          ...entry,
+          subject_id: "subject-2",
+        })),
+        descriptions: source.descriptions.map((description) => ({
+          ...description,
+          subject_id: "subject-2",
+          final_description: "Deskripsi CP Kristen Protestan",
+        })),
+        subjects: [
+          {
+            ...source.subjects[0]!,
+            name: "Agama Katolik",
+            religion_scope: "catholic",
+          },
+          {
+            ...source.subjects[0]!,
+            id: "subject-2",
+            name: "Agama Kristen Protestan",
+            religion_scope: "christian",
+          },
+        ],
+      },
+    })
+
+    expect(report.subjects.map((item) => item.subjectName)).toEqual([
+      "Agama Kristen Protestan",
+    ])
+    expect(report.subjects[0]?.components[0]).toMatchObject({
+      average: 85,
+      description: "Deskripsi CP Kristen Protestan",
+    })
   })
 
   it("menandai field opsional kosong tanpa mengarang isinya", () => {

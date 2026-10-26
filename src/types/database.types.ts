@@ -1161,6 +1161,64 @@ export type Database = {
         }
         Relationships: []
       }
+      student_religion_subject_overrides: {
+        Row: {
+          class_id: string
+          created_at: string
+          created_by: string
+          id: string
+          semester_id: string
+          student_id: string
+          subject_id: string
+          updated_at: string
+          updated_by: string
+        }
+        Insert: {
+          class_id: string
+          created_at?: string
+          created_by: string
+          id?: string
+          semester_id: string
+          student_id: string
+          subject_id: string
+          updated_at?: string
+          updated_by: string
+        }
+        Update: {
+          class_id?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          semester_id?: string
+          student_id?: string
+          subject_id?: string
+          updated_at?: string
+          updated_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_religion_subject_overrides_membership_fkey"
+            columns: ["student_id", "class_id", "semester_id"]
+            isOneToOne: false
+            referencedRelation: "class_members"
+            referencedColumns: ["student_id", "class_id", "semester_id"]
+          },
+          {
+            foreignKeyName: "student_religion_subject_overrides_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_religion_subject_overrides_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subjects: {
         Row: {
           code: string | null

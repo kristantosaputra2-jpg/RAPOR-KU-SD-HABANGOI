@@ -55,6 +55,7 @@ export type ReportSourceData = Readonly<{
   studentBiodata: StudentBiodata | null
   studentPhotoUrl: string | null
   homeroomTeacher: HomeroomTeacher | null
+  religionSubjectOverrideId: string | null
 }>
 
 export type ReportComponentResult = Readonly<{
@@ -193,7 +194,11 @@ function buildSubjectResults(source: ReportSourceData, student: Student) {
       (subject) =>
         subject.is_active &&
         assignedIds.has(subject.id) &&
-        subjectMatchesStudentReligion(subject, student.religion),
+        subjectMatchesStudentReligion(
+          subject,
+          student.religion,
+          source.religionSubjectOverrideId,
+        ),
     )
     .map<ReportSubjectResult>((subject) => {
       const kkm = resolveSubjectKkm(subject.id, source)
