@@ -429,7 +429,11 @@ Penilaian semester dibagi menjadi:
 - **Formatif**: penilaian harian, latihan, tugas, dan penilaian proses lain;
 - **Sumatif**: Penilaian Tengah Semester dan Penilaian Akhir Semester.
 
-Setiap penilaian tetap terkait dengan TP/CP. Rumus atau bobot penggabungan Formatif dan Sumatif ditetapkan pada tahap berikutnya dan tidak boleh diasumsikan oleh sistem.
+Setiap penilaian tetap terkait dengan TP/CP serta komponen Pengetahuan atau Keterampilan. Nilai akhir CP dihitung setelah Formatif, PTS, dan PAS tersedia:
+
+`rata-rata Formatif × 40% + rata-rata PTS/PAS × 60%`
+
+PTS dan PAS berbobot sama di dalam rata-rata Sumatif. Formatif dapat memiliki lebih dari satu catatan nilai; PTS dan PAS masing-masing satu per CP dan komponen.
 
 Pada desktop dapat menggunakan tabel.
 

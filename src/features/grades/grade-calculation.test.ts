@@ -4,6 +4,7 @@ import {
   calculateFinalGrade,
   calculatePredicate,
   calculatePredicateRanges,
+  calculateWeightedAssessmentGrade,
 } from "./grade-calculation"
 
 describe("calculateFinalGrade", () => {
@@ -25,6 +26,24 @@ describe("calculateFinalGrade", () => {
     expect(() => calculateFinalGrade([-1])).toThrow("0 sampai 100")
     expect(() => calculateFinalGrade([101])).toThrow("0 sampai 100")
     expect(() => calculateFinalGrade([Number.NaN])).toThrow("0 sampai 100")
+  })
+})
+
+describe("calculateWeightedAssessmentGrade", () => {
+  it("uses 40 percent formative and 60 percent equally averaged PTS/PAS", () => {
+    expect(calculateWeightedAssessmentGrade([70, 80], [80], [90])).toBe(81)
+  })
+
+  it("waits until formative, PTS, and PAS are all available", () => {
+    expect(calculateWeightedAssessmentGrade([], [80], [90])).toBeNull()
+    expect(calculateWeightedAssessmentGrade([80], [], [90])).toBeNull()
+    expect(calculateWeightedAssessmentGrade([80], [90], [])).toBeNull()
+  })
+
+  it("validates every assessment score", () => {
+    expect(() => calculateWeightedAssessmentGrade([101], [80], [90])).toThrow(
+      "0 sampai 100",
+    )
   })
 })
 

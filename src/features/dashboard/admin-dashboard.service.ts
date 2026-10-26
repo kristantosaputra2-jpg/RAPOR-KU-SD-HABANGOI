@@ -52,11 +52,17 @@ type DashboardData = Readonly<{
     grade_level: number
   }>
   componentIds: ReadonlyArray<string>
+  assessmentItems: ReadonlyArray<{
+    subject_id: string
+    learning_outcome_id: string
+    assessment_component_id: string
+  }>
   grades: ReadonlyArray<{
     student_id: string
     subject_id: string
     learning_outcome_id: string
     assessment_component_id: string
+    calculation_source: string
   }>
   descriptions: ReadonlyArray<{
     student_id: string
@@ -109,15 +115,35 @@ export function buildAdminDashboardSummary(
     subjectsByClass.set(assignment.class_id, subjectIds)
   })
 
-  const gradeKeys = new Set(
-    data.grades.map((item) =>
+  const detailedKeys = new Set(
+    data.assessmentItems.map((item) =>
       key(
-        item.student_id,
         item.subject_id,
         item.learning_outcome_id,
         item.assessment_component_id,
       ),
     ),
+  )
+  const gradeKeys = new Set(
+    data.grades
+      .filter(
+        (item) =>
+          !detailedKeys.has(
+            key(
+              item.subject_id,
+              item.learning_outcome_id,
+              item.assessment_component_id,
+            ),
+          ) || item.calculation_source === "formative_summative",
+      )
+      .map((item) =>
+        key(
+          item.student_id,
+          item.subject_id,
+          item.learning_outcome_id,
+          item.assessment_component_id,
+        ),
+      ),
   )
   const descriptionKeys = new Set(
     data.descriptions
@@ -239,6 +265,7 @@ export async function getAdminDashboardSummary(
       assignments: [],
       outcomes: [],
       componentIds: [],
+      assessmentItems: [],
       grades: [],
       descriptions: [],
       attendanceStudentIds: [],
@@ -270,9 +297,14 @@ export async function getAdminDashboardSummary(
       .eq("is_active", true),
     client.from("assessment_components").select("id").eq("is_active", true),
     client
+      .from("assessment_items")
+      .select("subject_id,learning_outcome_id,assessment_component_id")
+      .eq("semester_id", semesterId)
+      .eq("is_active", true),
+    client
       .from("grade_entries")
       .select(
-        "student_id,subject_id,learning_outcome_id,assessment_component_id",
+        "student_id,subject_id,learning_outcome_id,assessment_component_id,calculation_source",
       )
       .eq("semester_id", semesterId),
     client
@@ -313,6 +345,7 @@ export async function getAdminDashboardSummary(
     assignmentResult,
     outcomeResult,
     componentResult,
+    assessmentItemResult,
     gradeResult,
     descriptionResult,
     attendanceResult,
@@ -329,6 +362,7 @@ export async function getAdminDashboardSummary(
     assignments: assignmentResult.data ?? [],
     outcomes: outcomeResult.data ?? [],
     componentIds: (componentResult.data ?? []).map((item) => item.id),
+    assessmentItems: assessmentItemResult.data ?? [],
     grades: gradeResult.data ?? [],
     descriptions: descriptionResult.data ?? [],
     attendanceStudentIds: (attendanceResult.data ?? []).map(

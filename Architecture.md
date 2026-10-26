@@ -405,6 +405,8 @@ subjects
 teacher_assignments
 learning_outcomes
 assessment_components
+assessment_items
+assessment_scores
 grade_entries
 report_descriptions
 attendance
@@ -428,6 +430,12 @@ dan mengubah data ekstrakurikuler kelas yang menjadi tanggung jawabnya. Kedua
 tabel memakai RLS dan tidak dapat diakses pengguna anonim.
 
 Schema final masih TBD.
+
+## Implementasi Formatif dan Sumatif
+
+`assessment_items` menyimpan kegiatan Formatif atau Sumatif per kelas, mapel, CP, komponen, dan semester. Formatif mendukung nilai harian, latihan, tugas, dan jenis lain; Sumatif dibatasi menjadi satu PTS dan satu PAS pada scope yang sama. `assessment_scores` menyimpan nilai 0–100 seluruh siswa untuk kegiatan tersebut.
+
+Fungsi transaksi `save_assessment_scores` menyimpan nilai mentah dan memperbarui `grade_entries` sebagai hasil turunan setelah Formatif, PTS, dan PAS lengkap. Rumusnya adalah 40% rata-rata Formatif dan 60% rata-rata PTS/PAS. RLS tetap memakai scope Admin, kelas Wali Kelas, atau penugasan Guru Mata Pelajaran.
 
 ## Implementasi Prestasi MVP
 

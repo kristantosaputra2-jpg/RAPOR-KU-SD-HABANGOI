@@ -37,12 +37,17 @@ type StudentExtracurricular = Pick<
 type Extracurricular = Pick<Tables<"extracurriculars">, "id" | "name">
 type StudentBiodata = Tables<"student_biodata">
 type HomeroomTeacher = Pick<Tables<"teacher_profiles">, "full_name" | "nip">
+type AssessmentItemScope = Pick<
+  Tables<"assessment_items">,
+  "subject_id" | "learning_outcome_id" | "assessment_component_id"
+>
 
 export type ReportSourceData = Readonly<{
   school: SchoolSettings | null
   assignedSubjectIds: ReadonlyArray<string>
   subjects: ReadonlyArray<Subject>
   assessmentComponents: ReadonlyArray<AssessmentComponent>
+  assessmentItems: ReadonlyArray<AssessmentItemScope>
   gradeEntries: ReadonlyArray<GradeEntry>
   descriptions: ReadonlyArray<ReportDescription>
   gradingSetting: GradingSetting | null
@@ -205,11 +210,22 @@ function buildSubjectResults(source: ReportSourceData, student: Student) {
       const components = source.assessmentComponents
         .filter((component) => component.is_active)
         .map<ReportComponentResult>((component) => {
+          const detailedOutcomeIds = new Set(
+            source.assessmentItems
+              .filter(
+                (item) =>
+                  item.subject_id === subject.id &&
+                  item.assessment_component_id === component.id,
+              )
+              .map((item) => item.learning_outcome_id),
+          )
           const scores = source.gradeEntries
             .filter(
               (entry) =>
                 entry.subject_id === subject.id &&
-                entry.assessment_component_id === component.id,
+                entry.assessment_component_id === component.id &&
+                (!detailedOutcomeIds.has(entry.learning_outcome_id) ||
+                  entry.calculation_source === "formative_summative"),
             )
             .map((entry) => entry.score)
           const average = calculateFinalGrade(scores)

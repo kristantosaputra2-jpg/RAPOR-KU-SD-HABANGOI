@@ -152,6 +152,149 @@ export type Database = {
         }
         Relationships: []
       }
+      assessment_items: {
+        Row: {
+          assessment_component_id: string
+          category: string
+          class_id: string
+          created_at: string
+          created_by: string
+          display_order: number
+          grade_level: number
+          id: string
+          is_active: boolean
+          kind: string
+          learning_outcome_id: string
+          semester_id: string
+          subject_id: string
+          title: string
+          updated_at: string
+          updated_by: string
+        }
+        Insert: {
+          assessment_component_id: string
+          category: string
+          class_id: string
+          created_at?: string
+          created_by: string
+          display_order?: number
+          grade_level: number
+          id?: string
+          is_active?: boolean
+          kind: string
+          learning_outcome_id: string
+          semester_id: string
+          subject_id: string
+          title: string
+          updated_at?: string
+          updated_by: string
+        }
+        Update: {
+          assessment_component_id?: string
+          category?: string
+          class_id?: string
+          created_at?: string
+          created_by?: string
+          display_order?: number
+          grade_level?: number
+          id?: string
+          is_active?: boolean
+          kind?: string
+          learning_outcome_id?: string
+          semester_id?: string
+          subject_id?: string
+          title?: string
+          updated_at?: string
+          updated_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessment_items_assessment_component_id_fkey"
+            columns: ["assessment_component_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_components"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assessment_items_class_scope_fkey"
+            columns: ["class_id", "semester_id", "grade_level"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id", "semester_id", "grade_level"]
+          },
+          {
+            foreignKeyName: "assessment_items_outcome_scope_fkey"
+            columns: [
+              "learning_outcome_id",
+              "subject_id",
+              "semester_id",
+              "grade_level",
+            ]
+            isOneToOne: false
+            referencedRelation: "learning_outcomes"
+            referencedColumns: [
+              "id",
+              "subject_id",
+              "semester_id",
+              "grade_level",
+            ]
+          },
+        ]
+      }
+      assessment_scores: {
+        Row: {
+          assessment_item_id: string
+          class_id: string
+          created_at: string
+          created_by: string
+          id: string
+          score: number
+          semester_id: string
+          student_id: string
+          updated_at: string
+          updated_by: string
+        }
+        Insert: {
+          assessment_item_id: string
+          class_id: string
+          created_at?: string
+          created_by: string
+          id?: string
+          score: number
+          semester_id: string
+          student_id: string
+          updated_at?: string
+          updated_by: string
+        }
+        Update: {
+          assessment_item_id?: string
+          class_id?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          score?: number
+          semester_id?: string
+          student_id?: string
+          updated_at?: string
+          updated_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessment_scores_item_scope_fkey"
+            columns: ["assessment_item_id", "class_id", "semester_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_items"
+            referencedColumns: ["id", "class_id", "semester_id"]
+          },
+          {
+            foreignKeyName: "assessment_scores_membership_fkey"
+            columns: ["student_id", "class_id", "semester_id"]
+            isOneToOne: false
+            referencedRelation: "class_members"
+            referencedColumns: ["student_id", "class_id", "semester_id"]
+          },
+        ]
+      }
       attendance: {
         Row: {
           absent_days: number
@@ -320,6 +463,7 @@ export type Database = {
       grade_entries: {
         Row: {
           assessment_component_id: string
+          calculation_source: string
           class_id: string
           created_at: string
           created_by: string
@@ -335,6 +479,7 @@ export type Database = {
         }
         Insert: {
           assessment_component_id: string
+          calculation_source?: string
           class_id: string
           created_at?: string
           created_by: string
@@ -350,6 +495,7 @@ export type Database = {
         }
         Update: {
           assessment_component_id?: string
+          calculation_source?: string
           class_id?: string
           created_at?: string
           created_by?: string
@@ -1501,6 +1647,13 @@ export type Database = {
           p_source_class_id: string
           p_student_ids: string[]
           p_target_class_id?: string | null
+        }
+        Returns: number
+      }
+      save_assessment_scores: {
+        Args: {
+          p_assessment_item_id: string
+          p_scores: Json
         }
         Returns: number
       }

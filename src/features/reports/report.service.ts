@@ -27,6 +27,7 @@ async function getReportSources(
     assignmentResult,
     subjectResult,
     componentResult,
+    assessmentItemResult,
     gradeResult,
     descriptionResult,
     gradingSettingResult,
@@ -67,9 +68,15 @@ async function getReportSources(
       .eq("is_active", true)
       .order("display_order"),
     client
+      .from("assessment_items")
+      .select("subject_id,learning_outcome_id,assessment_component_id")
+      .eq("class_id", classId)
+      .eq("semester_id", semesterId)
+      .eq("is_active", true),
+    client
       .from("grade_entries")
       .select(
-        "id,student_id,class_id,subject_id,learning_outcome_id,assessment_component_id,semester_id,grade_level,score,created_at,updated_at",
+        "id,student_id,class_id,subject_id,learning_outcome_id,assessment_component_id,semester_id,grade_level,score,calculation_source,created_at,updated_at",
       )
       .in("student_id", studentIds)
       .eq("class_id", classId)
@@ -149,6 +156,7 @@ async function getReportSources(
     assignmentResult,
     subjectResult,
     componentResult,
+    assessmentItemResult,
     gradeResult,
     descriptionResult,
     gradingSettingResult,
@@ -208,6 +216,7 @@ async function getReportSources(
           assignedSubjectIds,
           subjects: subjectResult.data ?? [],
           assessmentComponents: componentResult.data ?? [],
+          assessmentItems: assessmentItemResult.data ?? [],
           gradeEntries: (gradeResult.data ?? []).filter(
             (item) => item.student_id === studentId,
           ),

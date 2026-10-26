@@ -7,7 +7,7 @@ import type { Database, Tables } from "@/types/database.types"
 const ruleColumns =
   "id,class_id,subject_id,semester_id,minimum_mastery_score,created_at,updated_at"
 const gradeColumns =
-  "id,student_id,class_id,subject_id,learning_outcome_id,assessment_component_id,semester_id,grade_level,score,created_at,updated_at"
+  "id,student_id,class_id,subject_id,learning_outcome_id,assessment_component_id,semester_id,grade_level,score,calculation_source,created_at,updated_at"
 
 export type GradingRule = Pick<
   Tables<"grading_rules">,
@@ -31,6 +31,7 @@ export type GradeEntry = Pick<
   | "semester_id"
   | "grade_level"
   | "score"
+  | "calculation_source"
   | "created_at"
   | "updated_at"
 >
@@ -163,6 +164,7 @@ export async function saveLearningOutcomeScores(
         semester_id: scope.semesterId,
         grade_level: scope.gradeLevel,
         score,
+        calculation_source: "legacy",
         created_by: userId,
         updated_by: userId,
       }))

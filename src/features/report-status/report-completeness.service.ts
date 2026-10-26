@@ -55,6 +55,7 @@ export async function getReportCompleteness(
     subjectResult,
     outcomeResult,
     componentResult,
+    assessmentItemResult,
     gradeResult,
     descriptionResult,
     attendanceResult,
@@ -84,9 +85,15 @@ export async function getReportCompleteness(
       .eq("is_active", true),
     client.from("assessment_components").select("id").eq("is_active", true),
     client
+      .from("assessment_items")
+      .select("subject_id,learning_outcome_id,assessment_component_id")
+      .eq("class_id", classId)
+      .eq("semester_id", semesterId)
+      .eq("is_active", true),
+    client
       .from("grade_entries")
       .select(
-        "student_id,subject_id,learning_outcome_id,assessment_component_id",
+        "student_id,subject_id,learning_outcome_id,assessment_component_id,calculation_source",
       )
       .eq("class_id", classId)
       .eq("semester_id", semesterId),
@@ -135,6 +142,7 @@ export async function getReportCompleteness(
     subjectResult,
     outcomeResult,
     componentResult,
+    assessmentItemResult,
     gradeResult,
     descriptionResult,
     attendanceResult,
@@ -155,15 +163,35 @@ export async function getReportCompleteness(
   ]
   const componentIds = (componentResult.data ?? []).map((item) => item.id)
   const outcomes = outcomeResult.data ?? []
-  const gradeKeys = new Set(
-    (gradeResult.data ?? []).map((item) =>
+  const detailedKeys = new Set(
+    (assessmentItemResult.data ?? []).map((item) =>
       key(
-        item.student_id,
         item.subject_id,
         item.learning_outcome_id,
         item.assessment_component_id,
       ),
     ),
+  )
+  const gradeKeys = new Set(
+    (gradeResult.data ?? [])
+      .filter(
+        (item) =>
+          !detailedKeys.has(
+            key(
+              item.subject_id,
+              item.learning_outcome_id,
+              item.assessment_component_id,
+            ),
+          ) || item.calculation_source === "formative_summative",
+      )
+      .map((item) =>
+        key(
+          item.student_id,
+          item.subject_id,
+          item.learning_outcome_id,
+          item.assessment_component_id,
+        ),
+      ),
   )
   const descriptionKeys = new Set(
     (descriptionResult.data ?? [])

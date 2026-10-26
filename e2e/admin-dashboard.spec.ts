@@ -305,6 +305,12 @@ async function openAuthenticatedDashboard(
   await page.route("**/rest/v1/subject_kkm_rules*", async (route) => {
     await route.fulfill({ status: 200, json: [] })
   })
+  await page.route("**/rest/v1/assessment_items*", async (route) => {
+    await route.fulfill({ status: 200, json: [] })
+  })
+  await page.route("**/rest/v1/assessment_scores*", async (route) => {
+    await route.fulfill({ status: 200, json: [] })
+  })
   await page.route("**/rest/v1/grade_entries*", async (route) => {
     await route.fulfill({
       status: 200,
@@ -323,6 +329,7 @@ async function openAuthenticatedDashboard(
               semester_id: "semester-1",
               grade_level: gradeLevel,
               score,
+              calculation_source: "legacy",
               created_at: "2026-09-02T00:00:00.000Z",
               updated_at: "2026-09-02T00:00:00.000Z",
             })),
@@ -1416,6 +1423,10 @@ for (const viewport of settingsViewports) {
     await page.setViewportSize(viewport)
     await openAuthenticatedDashboard(page, true, true)
     await openGrades(page, viewport.width)
+
+    await expect(
+      page.getByRole("heading", { name: "Formatif 40% · Sumatif 60%" }),
+    ).toBeVisible()
 
     await expect(
       page.locator(

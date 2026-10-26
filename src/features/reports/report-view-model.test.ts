@@ -94,6 +94,7 @@ function createSource(): ReportSourceData {
         is_active: true,
       },
     ],
+    assessmentItems: [],
     gradeEntries: [
       {
         id: "grade-1",
@@ -105,6 +106,7 @@ function createSource(): ReportSourceData {
         semester_id: "semester-1",
         grade_level: 2,
         score: 80,
+        calculation_source: "legacy",
         created_at: "2026-01-01",
         updated_at: "2026-01-01",
       },
@@ -118,6 +120,7 @@ function createSource(): ReportSourceData {
         semester_id: "semester-1",
         grade_level: 2,
         score: 90,
+        calculation_source: "legacy",
         created_at: "2026-01-01",
         updated_at: "2026-01-01",
       },
@@ -182,6 +185,37 @@ describe("buildReportViewModel", () => {
       predicate: null,
       description: null,
     })
+  })
+
+  it("mengabaikan nilai manual lama saat CP sudah memakai Formatif dan Sumatif", () => {
+    const source = createSource()
+    const report = buildReportViewModel({
+      schoolClass,
+      student,
+      academicYear,
+      semester,
+      source: {
+        ...source,
+        assessmentItems: [
+          {
+            subject_id: "subject-1",
+            learning_outcome_id: "cp-1",
+            assessment_component_id: "knowledge",
+          },
+        ],
+        gradeEntries: [
+          ...source.gradeEntries,
+          {
+            ...source.gradeEntries[0]!,
+            id: "grade-derived",
+            score: 70,
+            calculation_source: "formative_summative",
+          },
+        ],
+      },
+    })
+
+    expect(report.subjects[0]?.components[0]?.average).toBe(80)
   })
 
   it("memakai template kelas tinggi dan KKM per mata pelajaran", () => {

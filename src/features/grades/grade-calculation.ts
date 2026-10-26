@@ -28,6 +28,34 @@ export function calculateFinalGrade(scores: ReadonlyArray<number>) {
   return Math.round(average * 100) / 100
 }
 
+export function calculateWeightedAssessmentGrade(
+  formativeScores: ReadonlyArray<number>,
+  midtermScores: ReadonlyArray<number>,
+  finalScores: ReadonlyArray<number>,
+) {
+  if (
+    formativeScores.length === 0 ||
+    midtermScores.length === 0 ||
+    finalScores.length === 0
+  ) {
+    return null
+  }
+
+  const formativeAverage = calculateFinalGrade(formativeScores)
+  const summativeAverage = calculateFinalGrade([
+    calculateFinalGrade(midtermScores) as number,
+    calculateFinalGrade(finalScores) as number,
+  ])
+
+  return (
+    Math.round(
+      ((formativeAverage as number) * 0.4 +
+        (summativeAverage as number) * 0.6) *
+        100,
+    ) / 100
+  )
+}
+
 export function calculatePredicateRanges(
   kkm: number,
 ): ReadonlyArray<PredicateRange> {

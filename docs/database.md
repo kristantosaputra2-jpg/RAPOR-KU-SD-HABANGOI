@@ -85,11 +85,13 @@ Guru Mata Pelajaran memperoleh scope akses dari `teacher_assignments`. CP tidak 
 | `grading_settings`  | Menentukan mode KKM `single` atau `multi` per semester                             |
 | `subject_kkm_rules` | KKM per mata pelajaran ketika mode `multi` aktif                                   |
 | `grading_rules`     | Struktur KKM awal per kelas, mata pelajaran, dan semester yang masih dipertahankan |
-| `grade_entries`     | Nilai 0–100 per siswa, CP, komponen, kelas, mapel, dan semester                    |
+| `assessment_items`  | Kegiatan Formatif atau PTS/PAS per CP dan komponen                                 |
+| `assessment_scores` | Nilai mentah 0–100 seluruh siswa untuk satu kegiatan penilaian                     |
+| `grade_entries`     | Nilai akhir CP hasil 40% Formatif dan 60% rata-rata PTS/PAS, atau nilai lama       |
 
 `grading_settings` dan `subject_kkm_rules` menjadi sumber konfigurasi KKM pada report view model saat ini. `grading_rules` masih memiliki service dan schema, sehingga tidak boleh dihapus tanpa audit penggunaan serta migration yang menjaga data lama.
 
-Nilai akhir, rata-rata, dan predikat tidak disimpan sebagai angka manual terpisah. Nilai tersebut dihitung dari `grade_entries` menggunakan business logic aplikasi.
+Nilai mentah disimpan pada `assessment_scores`. Fungsi transaksi database menghitung nilai akhir CP setelah Formatif, PTS, dan PAS lengkap, lalu menyinkronkannya ke `grade_entries` agar deskripsi, leger, preview, dan cetak tetap memakai satu sumber hasil. `calculation_source` membedakan hasil baru dari nilai manual historis.
 
 ### 4.6 Isi dan Kelengkapan Rapor
 
@@ -129,6 +131,10 @@ flowchart TD
   LO --> GE
   AC[assessment_components] --> GE
   S --> GE
+  LO --> AI[assessment_items]
+  AC --> AI
+  AI --> AS[assessment_scores]
+  ST --> AS
 
   GE --> RD[report_descriptions]
   ST --> SB[student_biodata]
@@ -146,6 +152,8 @@ Diagram menunjukkan alur utama, bukan seluruh foreign key dan indeks.
 - KKM hanya boleh berada pada rentang 1–100.
 - Mode `single` wajib memiliki satu KKM; mode `multi` memakai KKM per mapel.
 - `grade_entries` mengikat siswa, kelas, mapel, CP, komponen, jenjang, dan semester yang konsisten.
+- Formatif dapat memiliki banyak kegiatan; Sumatif hanya boleh memiliki satu PTS dan satu PAS per kelas, mapel, CP, komponen, dan semester.
+- Nilai akhir baru hanya tersedia ketika sedikitnya satu Formatif, PTS, dan PAS memiliki nilai untuk siswa tersebut.
 - `report_descriptions` mengikat sumber CP terbaik/terlemah pada scope mapel, jenjang, dan semester yang sama.
 - `subjects.religion_scope` bernilai `null` untuk semua siswa atau salah satu kelompok agama yang didukung; jika ada `student_religion_subject_overrides`, trigger memakai mapel pengganti itu, selainnya memakai `students.religion`.
 - Setiap siswa hanya dapat memiliki satu mapel agama pengganti per semester, dan penggantian ditolak bila akan menyembunyikan nilai atau deskripsi mapel agama yang sudah tersimpan.

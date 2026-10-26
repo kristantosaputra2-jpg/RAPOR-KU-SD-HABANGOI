@@ -98,6 +98,7 @@ Keterangan: `R` membaca, `C` menambah, `U` mengubah, `D` menghapus, dan `—` ti
 | `teacher_assignments`                   | R/C/U              | R (milik akun yang terhubung) | R (milik akun yang terhubung)                             | —         |
 | `learning_outcomes`                     | R/C/U              | R (CP aktif sesuai kelas)     | R/C/U (scope penugasan; hanya CP aktif yang dapat dibaca) | —         |
 | `assessment_components`                 | R/C/U              | R (komponen aktif)            | R (komponen aktif)                                        | —         |
+| `assessment_items`, `assessment_scores` | R/C/U              | R/C/U (kelas sendiri)         | R/C/U (scope penugasan)                                   | —         |
 | `grading_settings`, `subject_kkm_rules` | R/C/U              | R                             | R                                                         | —         |
 | `grading_rules`                         | R/C/U              | R (kelas sendiri)             | R (scope penugasan)                                       | —         |
 | `grade_entries`                         | R/C/U/D            | R/C/U/D (kelas sendiri)       | R/C/U/D (scope penugasan)                                 | —         |

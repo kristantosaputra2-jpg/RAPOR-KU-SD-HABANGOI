@@ -56,6 +56,7 @@ import {
 } from "@/features/subjects/student-religion-subject.service"
 import { getTeacherByUserId } from "@/features/teachers/teacher.service"
 import { getGradeClassOptions, getGradeSubjectOptions } from "./grade-access"
+import { AssessmentEntryPanel } from "./assessment-entry-panel"
 
 type Props = Readonly<{
   userId: string
@@ -143,6 +144,7 @@ export function GradeEntryPage({
   const [savingReligionStudentId, setSavingReligionStudentId] = useState<
     string | null
   >(null)
+  const [usesDetailedAssessments, setUsesDetailedAssessments] = useState(false)
 
   useEffect(() => {
     let mounted = true
@@ -427,6 +429,56 @@ export function GradeEntryPage({
     } finally {
       setIsSaving(false)
     }
+  }
+
+  async function refreshDerivedGrades() {
+    if (!selectedClass || !subjectId) return
+    const refreshed = await getGradeEntries({
+      classId: selectedClass.id,
+      subjectId,
+      semesterId: selectedClass.semester_id,
+    })
+    setEntries(refreshed)
+    const next: Record<string, string> = {}
+    refreshed.forEach((entry) => {
+      if (
+        usesDetailedAssessments &&
+        entry.assessment_component_id === componentId &&
+        entry.calculation_source !== "formative_summative"
+      ) {
+        return
+      }
+      next[
+        keyFor(
+          entry.assessment_component_id,
+          entry.student_id,
+          entry.learning_outcome_id,
+        )
+      ] = entry.score.toString()
+    })
+    setDrafts(next)
+  }
+
+  function changeAssessmentMode(enabled: boolean) {
+    setUsesDetailedAssessments(enabled)
+    const next: Record<string, string> = {}
+    entries.forEach((entry) => {
+      if (
+        enabled &&
+        entry.assessment_component_id === componentId &&
+        entry.calculation_source !== "formative_summative"
+      ) {
+        return
+      }
+      next[
+        keyFor(
+          entry.assessment_component_id,
+          entry.student_id,
+          entry.learning_outcome_id,
+        )
+      ] = entry.score.toString()
+    })
+    setDrafts(next)
   }
 
   function componentDescription(studentId: string) {
@@ -791,11 +843,31 @@ export function GradeEntryPage({
                 </button>
               ))}
             </nav>
+            {activeComponent ? (
+              <AssessmentEntryPanel
+                userId={userId}
+                scope={{
+                  classId: selectedClass.id,
+                  subjectId,
+                  semesterId: selectedClass.semester_id,
+                  gradeLevel: selectedClass.grade_level,
+                  assessmentComponentId: activeComponent.id,
+                }}
+                componentName={activeComponent.name}
+                outcomes={outcomes}
+                students={students}
+                onModeChange={changeAssessmentMode}
+                onDerivedGradesChanged={refreshDerivedGrades}
+              />
+            ) : null}
             <section className="mt-5 overflow-hidden rounded-3xl border border-[var(--rapotku-border)] bg-white">
               <div className="border-b border-[var(--rapotku-border)] p-4 sm:p-6">
                 <h2 className="text-lg font-bold">{activeComponent?.name}</h2>
                 <p className="text-sm text-[var(--rapotku-muted)]">
                   {outcomes.length} CP aktif
+                  {usesDetailedAssessments
+                    ? " · Nilai akhir dihitung otomatis"
+                    : " · Input nilai akhir manual"}
                 </p>
               </div>
               {isLoadingGrades ? (
@@ -844,6 +916,7 @@ export function GradeEntryPage({
                                   max="100"
                                   step="0.01"
                                   inputMode="decimal"
+                                  disabled={usesDetailedAssessments}
                                   value={
                                     drafts[
                                       keyFor(
@@ -928,6 +1001,7 @@ export function GradeEntryPage({
                                     min="0"
                                     max="100"
                                     step="0.01"
+                                    disabled={usesDetailedAssessments}
                                     value={
                                       drafts[
                                         keyFor(
@@ -980,7 +1054,7 @@ export function GradeEntryPage({
                     <button
                       className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[var(--rapotku-brand)] px-5 font-bold text-white sm:w-auto"
                       type="button"
-                      disabled={isSaving}
+                      disabled={isSaving || usesDetailedAssessments}
                       onClick={() => void saveScores()}
                     >
                       {isSaving ? (
@@ -990,7 +1064,9 @@ export function GradeEntryPage({
                       )}
                       {isSaving
                         ? "Menyimpan..."
-                        : `Simpan ${activeComponent?.name}`}
+                        : usesDetailedAssessments
+                          ? "Otomatis dari Formatif/Sumatif"
+                          : `Simpan ${activeComponent?.name}`}
                     </button>
                   </div>
                 </>
